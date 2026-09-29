@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{background:#3a3050;margin:8px;font:10px monospace;color:#fff} canvas{image-rendering:pixelated;margin:2px;background:#6a8a5a} .row{display:flex;flex-wrap:wrap;align-items:flex-end}</style></head>
+<body><div id="out"></div>
+<script type="module">
+import { buildAllCharacters } from '../src/gfx/characters.js';
+import { buildPortraits } from '../src/gfx/portraits.js';
+const store = [];
+const fake = { textures: { exists: () => false, remove(){}, addCanvas(key, cv){ store.push([key, cv]); return { add(){} }; } }, anims: { exists: () => true } };
+buildAllCharacters(fake);
+buildPortraits(fake);
+const out = document.getElementById('out');
+const params = new URLSearchParams(location.search);
+const filter = params.get('f') || '';
+const scale = +(params.get('s') || 3);
+for (const [k, cv] of store) {
+  if (filter && !k.includes(filter)) continue;
+  const c = document.createElement('canvas');
+  c.width = cv.width * scale; c.height = cv.height * scale;
+  const ctx = c.getContext('2d'); ctx.imageSmoothingEnabled = false; ctx.drawImage(cv, 0, 0, c.width, c.height);
+  c.title = k; out.appendChild(c);
+}
+document.body.dataset.ready = '1';
+</script></body></html>

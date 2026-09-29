@@ -1,0 +1,10 @@
+import pw from '/opt/node22/lib/node_modules/playwright/index.js'; const { chromium } = pw;
+const [,, url, out, w = 1400, h = 900] = process.argv;
+const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
+const p = await b.newPage({ viewport: { width: +w, height: +h } });
+p.on('console', (m) => console.log('console:', m.text()));
+p.on('pageerror', (e) => console.log('pageerror:', e.message));
+await p.goto(url);
+await p.waitForTimeout(1500);
+await p.screenshot({ path: out });
+await b.close();
