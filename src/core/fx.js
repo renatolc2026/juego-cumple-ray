@@ -119,9 +119,10 @@ export async function banner(scene, { icon, title, sub = '', sound = 'item', col
   const glow = scene.add.image(0, -8, 'light').setScale(1.2).setTint(Phaser.Display.Color.HexStringToColor(color).color).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.8);
   const ic = scene.add.image(0, -10, icon).setScale(2);
   const t = txt(scene, 0, 26, title, { size: 8, color: '#fff8ec', origin: 0.5, stroke: '#120c1f', strokeThickness: 4 });
-  const bg = scene.add.rectangle(0, 30, Math.max(t.width + 32, 160), sub ? 36 : 24, 0x120c1f, 0.85).setStrokeStyle(1, 0xffd166);
+  const st = sub ? txt(scene, 0, 40, sub, { size: 8, color, origin: 0.5 }) : null;
+  const bg = scene.add.rectangle(0, 32, Math.max(t.width + 32, (st ? st.width : 0) + 32, 160), sub ? 38 : 24, 0x120c1f, 0.85).setStrokeStyle(1, 0xffd166);
   c.add([glow, bg, ic, t]);
-  if (sub) c.add(txt(scene, 0, 40, sub, { size: 8, color, origin: 0.5 }));
+  if (st) c.add(st);
   c.setScale(0.3);
   c.alpha = 0;
   audio.sfx(sound);
@@ -129,7 +130,7 @@ export async function banner(scene, { icon, title, sub = '', sound = 'item', col
   scene.tweens.add({ targets: ic, y: -14, duration: 600, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
   await tween(scene, { targets: c, scale: 1, alpha: 1, duration: 350, ease: 'Back.Out' });
   sparkles(scene, W / 2, H / 2 - 30, 14, true);
-  await wait(sound === 'note' ? 2200 : 1500);
+  await wait(scene, sound === 'note' ? 2200 : 1500);
   await tween(scene, { targets: c, alpha: 0, scale: 1.2, duration: 300 });
   c.destroy();
 }

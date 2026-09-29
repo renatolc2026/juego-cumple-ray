@@ -15,6 +15,8 @@ export class DevScene extends Phaser.Scene {
     if (flags) flags.split(',').forEach((f) => state.setFlag(f));
     const notes = new URLSearchParams(location.search).get('notes');
     if (notes) notes.split(',').forEach((n) => state.addNote(n));
+    const fl = new URLSearchParams(location.search).get('floor');
+    if (fl) state.data.flags.towerFloor = +fl;
     if (kind === 'zone') {
       this.scene.start('World', { zone: arg, spawn: spawn || 'default' });
       return;

@@ -44,7 +44,7 @@ export default {
   objects: [
     { id: 'elevator', type: 'elevator', x: 10, y: 1, talk: (w) => elevatorTalk(w) },
     { type: 'pillar', x: 3, y: 3 }, { type: 'pillar', x: 18, y: 3 }, { type: 'pillar', x: 3, y: 9 }, { type: 'pillar', x: 18, y: 9 },
-    { type: 'plantGray', x: 1, y: 2 }, { type: 'plantGray', x: 20, y: 2 },
+    { type: 'plant', x: 1, y: 2 }, { type: 'plant', x: 20, y: 2 }, { type: 'flowers', x: 6, y: 12 }, { type: 'flowers', x: 15, y: 12 },
     { type: 'officeDesk', x: 1, y: 6, when: () => floor() % 2 === 0 },
     { type: 'officeDesk', x: 19, y: 6, when: () => floor() % 2 === 1 && floor() < 7 },
     { type: 'fogBox', x: 5, y: 10, when: () => floor() === 3 }, { type: 'fogBox', x: 3, y: 11, when: () => floor() === 3 },

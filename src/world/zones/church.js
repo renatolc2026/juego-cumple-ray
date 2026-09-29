@@ -129,9 +129,9 @@ async function benchHCJ(w) {
   await w.wait(900);
   audio.setClarity(1, 2);
   audio.playSong(MUSICBOX, { fadeIn: 2 });
-  const light = w.add.image(bench.sprite.x, bench.sprite.y - 12, 'light').setBlendMode('ADD').setDepth(8000).setAlpha(0).setScale(2.5);
-  w.tweens.add({ targets: light, alpha: 0.75, duration: 2500 });
-  w.tweens.add({ targets: light, scale: 2.8, duration: 1800, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
+  const light = w.add.image(bench.sprite.x, bench.sprite.y - 12, 'light').setBlendMode('ADD').setDepth(8000).setAlpha(0).setScale(1.8);
+  w.tweens.add({ targets: light, alpha: 0.42, duration: 2500 });
+  w.tweens.add({ targets: light, scale: 2.1, duration: 1800, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
   const motes = w.add.particles(bench.sprite.x, bench.sprite.y, 'sparkle', {
     x: { min: -40, max: 40 },
     speedY: { min: -8, max: -20 },

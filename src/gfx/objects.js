@@ -659,16 +659,17 @@ def('pillar', 16, 32, { fw: 1 }, (g) => {
   g.outline(O);
 });
 def('fogBox', 16, 16, { fw: 1 }, (g) => {
-  g.rect(1, 3, 14, 12, '#8a90a4');
-  g.rect(1, 3, 14, 3, '#aab0c2');
-  g.vline(8, 3, 12, '#6b7089');
+  g.rect(1, 3, 14, 12, '#c89a64');
+  g.rect(1, 3, 14, 3, '#dcb676');
+  g.vline(8, 3, 12, '#a87a48');
+  g.rect(6, 8, 5, 3, '#fff8ec');
   g.outline(O);
 });
 def('silentJukebox', 20, 28, { fw: 1, frames: 1 }, (g) => {
-  g.rrect(0, 0, 20, 28, 8, '#6b7089');
-  g.rrect(2, 2, 16, 12, 6, '#9aa0b4');
-  g.rect(4, 16, 12, 8, '#454a60');
-  for (let x = 5; x < 16; x += 2) g.vline(x, 17, 6, '#5a6078');
+  g.rrect(0, 0, 20, 28, 8, '#c4485a');
+  g.rrect(2, 2, 16, 12, 6, '#ffd166');
+  g.rect(4, 16, 12, 8, '#43281d');
+  for (let x = 5; x < 16; x += 2) g.vline(x, 17, 6, '#8a5a3b');
   g.outline(O);
 });
 

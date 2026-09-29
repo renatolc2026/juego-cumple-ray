@@ -22,7 +22,9 @@ class Controls extends Phaser.Events.EventEmitter {
     this.pending = new Set();
     this.now = new Set();
     this.dirStack = [];
-    this.isTouch = false;
+    this.isTouch = typeof window !== 'undefined' && (
+      (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || navigator.maxTouchPoints > 0
+    );
     this.mode = 'world'; // 'world' | 'lanes' | 'hidden'
     this.enabled = true;
   }

@@ -88,8 +88,8 @@ export class UIScene extends Phaser.Scene {
   target(p) {
     const mode = controls.mode;
     if (mode === 'hidden') return null;
-    // Con un diálogo abierto, en los minijuegos el toque sirve para avanzar el texto
-    if (S.dialog?.active && (mode === 'lanes' || mode === 'tap')) return null;
+    // Con un diálogo abierto, cualquier toque avanza el texto (menos el botón de menú en el mundo)
+    if (S.dialog?.active) return null;
     if (this.hit(p, BTN_M) && mode !== 'lanes' && mode !== 'tap') return 'menu';
     if (mode === 'lanes') {
       if (p.y < 40) return null;
@@ -140,6 +140,15 @@ export class UIScene extends Phaser.Scene {
       controls.release(btn, 'touch');
       this.pointers.delete(p.id);
       this.visual();
+    }
+  }
+
+  update() {
+    // Ocultar los controles mientras hay un diálogo abierto
+    const dlg = !!S.dialog?.active;
+    if (dlg !== this.dlgShown) {
+      this.dlgShown = dlg;
+      this.tweens.add({ targets: [this.dpad, this.btnA, this.btnB, this.lblA, this.lblB, this.lanes], alpha: dlg ? 0 : 1, duration: 150 });
     }
   }
 

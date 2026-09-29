@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import '@fontsource/press-start-2p/400.css';
+import '@fontsource/press-start-2p/latin-400.css';
 import { controls } from './core/input.js';
 import { audio } from './core/audio.js';
 import { state } from './core/state.js';

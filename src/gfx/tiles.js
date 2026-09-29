@@ -143,15 +143,15 @@ T.cave2 = (g) => {
   g.px([[4, 8], [11, 8]], PAL.code);
 };
 T.tower = (g) => {
-  g.rect(0, 0, 16, 16, '#b8bcc8');
-  g.hline(0, 15, 16, '#9aa0b0');
-  g.vline(15, 0, 16, '#9aa0b0');
-  g.px([[4, 4], [10, 9], [6, 12]], '#c8ccd6');
+  g.rect(0, 0, 16, 16, '#e2cfa8');
+  g.hline(0, 15, 16, '#c9b184');
+  g.vline(15, 0, 16, '#c9b184');
+  g.px([[4, 4], [10, 9], [6, 12]], '#eedcb8');
 };
 T.tower2 = (g) => {
-  g.rect(0, 0, 16, 16, '#8e94a8');
-  g.frame(0, 0, 16, 16, '#7a8096');
-  g.px([[3, 3], [12, 12]], '#a2a8ba');
+  g.rect(0, 0, 16, 16, '#c0504d');
+  g.frame(0, 0, 16, 16, '#a03a3a');
+  g.px([[3, 3], [12, 12]], '#e07070');
 };
 
 // Paredes: "Top" es el borde visto desde arriba, las otras son la cara frontal
@@ -229,14 +229,14 @@ T.caveWallGlyph = (g) => {
   g.hline(6, 9, 6, PAL.code);
   g.set(1, 6, PAL.code);
 };
-T.towerTop = (g) => wallTop(g, '#4a5066');
+T.towerTop = (g) => wallTop(g, '#3a4a7a');
 T.towerWall = (g) => {
-  wallFace(g, '#9aa0b4', '#5a6078');
-  g.vline(7, 0, 13, '#8a90a4');
+  wallFace(g, '#7fa8d8', '#3a5a8a');
+  g.vline(7, 0, 13, '#6f98c8');
 };
 T.towerWallWin = (g) => {
-  wallFace(g, '#9aa0b4', '#5a6078');
-  g.rect(2, 1, 12, 11, '#5a6078');
+  wallFace(g, '#7fa8d8', '#3a5a8a');
+  g.rect(2, 1, 12, 11, '#3a5a8a');
   g.rect(3, 2, 10, 9, '#c8d2e0');
   g.rect(3, 7, 10, 4, '#aab4c6');
   g.px([[4, 3], [5, 3], [4, 4]], '#ffffff');

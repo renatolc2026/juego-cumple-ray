@@ -545,7 +545,7 @@ export class WorldScene extends Phaser.Scene {
     state.addItem(key, 1);
     if (!state.data.clues.includes(key)) state.data.clues.push(key);
     const it = ITEMS[key];
-    await fx.banner(this, { icon: it.icon, title: `Pista: ${it.name}`, sub: 'Se guardó en el menú (Esc)', color: '#8fd3ff' });
+    await fx.banner(this, { icon: it.icon, title: `Pista: ${it.name}`, sub: 'Se guardó en el menú', color: '#8fd3ff' });
   }
 
   music(song, opts = {}) {
@@ -575,6 +575,8 @@ export class WorldScene extends Phaser.Scene {
 
   // Lanza un minijuego y espera su resultado
   async minigame(key, data = {}, transition = 'shatter') {
+    // Atajo de pruebas: ?autowin=1 gana los minijuegos al instante
+    if (new URLSearchParams(location.search).has('autowin')) return { win: true };
     this.transitioning = true;
     let cover = null;
     if (transition === 'shatter') cover = await fx.shatter(this);
@@ -635,7 +637,8 @@ export class WorldScene extends Phaser.Scene {
     const t = txt(this, 0, 0, text, { origin: 0.5, color: '#ffe9a0', stroke: '#120c1f', strokeThickness: 4 });
     const n1 = this.add.image(-t.width / 2 - 12, 0, 'noteS');
     const n2 = this.add.image(t.width / 2 + 12, 0, 'noteS2');
-    c.add([t, n1, n2]);
+    const bg = this.add.rectangle(0, 0, t.width + 52, 20, 0x120c1f, 0.7).setStrokeStyle(1, 0xffd166, 0.6);
+    c.add([bg, t, n1, n2]);
     c.setAlpha(0);
     this.tweens.add({ targets: c, alpha: 1, y: 170, duration: 300 });
     this.tweens.add({ targets: [n1, n2], angle: { from: -10, to: 10 }, duration: 300, yoyo: true, repeat: -1 });

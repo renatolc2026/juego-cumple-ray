@@ -40,7 +40,7 @@ export default {
     { type: 'mirror', x: 26, y: 1 },
     { id: 'stage', type: 'stage', x: 12, y: 2 },
     { type: 'speaker', x: 10, y: 2 }, { type: 'speaker', x: 17, y: 2 },
-    { id: 'disco', type: 'discoBall', x: 14, y: 5, fw: 2, oy: -10, depth: 3000, solid: false },
+    { id: 'disco', type: 'discoBall', x: 14, y: 6, fw: 2, oy: -22, solid: false },
     { type: 'barCounter', x: 24, y: 7 },
     { type: 'plant', x: 1, y: 15 }, { type: 'plant', x: 28, y: 15 }, { type: 'plant', x: 1, y: 3 }, { type: 'plant', x: 28, y: 3 },
     { type: 'cable', x: 18, y: 4 },

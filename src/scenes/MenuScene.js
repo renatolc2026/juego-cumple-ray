@@ -49,7 +49,7 @@ export class MenuScene extends Phaser.Scene {
     NOTE_ORDER.forEach((id, i) => {
       this.add.image(28 + i * 24, 230, state.hasNote(id) ? NOTES[id].icon : 'nota_vacia').setScale(0.9);
     });
-    txt(this, 68, 246, controls.isTouch ? 'botón de menú: cerrar' : 'Esc: cerrar', { origin: [0.5, 0], color: '#b9a8d6' });
+    txt(this, 68, 246, controls.isTouch ? 'Menú: cerrar' : 'Esc: cerrar', { origin: [0.5, 0], color: '#b9a8d6' });
     this.content = this.add.container(0, 0);
     this.refresh();
   }

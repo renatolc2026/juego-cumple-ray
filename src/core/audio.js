@@ -370,7 +370,7 @@ class AudioEngine {
       case 'marimba': {
         osc('sine', f, 0.8).g.connect(env);
         osc('sine', f * 4, 0.12).g.connect(env);
-        osc('sine', f * 10, 0.03).g.connect(env);
+        if (f * 10 < 16000) osc('sine', f * 10, 0.03).g.connect(env);
         env.gain.setValueAtTime(0, t);
         env.gain.linearRampToValueAtTime(0.45 * v, t + 0.003);
         env.gain.exponentialRampToValueAtTime(0.0005, t + 0.55);
@@ -378,7 +378,7 @@ class AudioEngine {
         break;
       }
       case 'bell': {
-        [[1, 0.5], [2.76, 0.18], [5.4, 0.08], [8.93, 0.03]].forEach(([m, g]) => osc('sine', f * m, g).g.connect(env));
+        [[1, 0.5], [2.76, 0.18], [5.4, 0.08], [8.93, 0.03]].filter(([m]) => f * m < 16000).forEach(([m, g]) => osc('sine', f * m, g).g.connect(env));
         env.gain.setValueAtTime(0, t);
         env.gain.linearRampToValueAtTime(0.32 * v, t + 0.002);
         env.gain.exponentialRampToValueAtTime(0.0005, t + 1.6);

@@ -1,0 +1,12 @@
+Fotos opcionales para los créditos del juego.
+
+1. Copia aquí las fotos (jpg o png), por ejemplo: ray-y-hachi.jpg
+2. Crea en esta misma carpeta un archivo fotos.json así:
+
+[
+  { "file": "ray-y-hachi.jpg", "caption": "Ray y Hachi" },
+  { "file": "familia.jpg", "caption": "La familia en Sullana" }
+]
+
+El juego las convierte en postales de pixel art al final, en los créditos.
+Si no hay fotos.json, los créditos usan solo las postales dibujadas.
