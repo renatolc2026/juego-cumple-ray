@@ -49,7 +49,7 @@ export default {
     { type: 'flowers', x: 7, y: 11 }, { type: 'flowers', x: 29, y: 10 }, { type: 'flowers', x: 2, y: 18 },
     { type: 'bin', x: 24, y: 7 }, { type: 'bin', x: 6, y: 15 },
     { type: 'sign', x: 6, y: 21, talk: (w) => w.say(null, '"Parque de Sullana. Prohibido estar triste en cumpleaños."') },
-    { type: 'sign', x: 30, y: 2, talk: (w) => w.say(null, '"↑ Iglesia"') },
+    { type: 'sign', x: 30, y: 2, talk: (w) => w.say(null, '"Iglesia: siga el camino hacia el norte."') },
   ],
 
   actors: () => [

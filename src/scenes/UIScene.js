@@ -27,14 +27,14 @@ export class UIScene extends Phaser.Scene {
     this.btnM = this.add.image(BTN_M.x, BTN_M.y, 'btnSmall').setScale(1.4);
     this.lblA = txt(this, BTN_A.x + 1, BTN_A.y + 1, 'A', { origin: 0.5, color: '#fff1d0' });
     this.lblB = txt(this, BTN_B.x + 1, BTN_B.y + 1, 'B', { origin: 0.5, color: '#fff1d0' });
-    this.lblM = txt(this, BTN_M.x + 1, BTN_M.y + 1, '≡', { origin: 0.5, color: '#fff1d0' });
+    this.lblM = this.add.image(BTN_M.x + 1, BTN_M.y + 1, 'iconMenu');
     this.root.add([this.dpad, this.btnA, this.btnB, this.btnM, this.lblA, this.lblB, this.lblM]);
 
     this.lanes = this.add.container(0, 0).setVisible(false);
     this.laneRects = LANE_DIRS.map((d, i) => {
       const r = this.add.rectangle(i * 120 + 60, 240, 116, 56, 0xfff1d0, 0.08).setStrokeStyle(1, 0xfff1d0, 0.35);
-      const arrows = { left: '←', down: '↓', up: '↑', right: '→' };
-      const t = txt(this, i * 120 + 60, 240, arrows[d], { origin: 0.5, size: 16, color: '#fff1d0' }).setAlpha(0.6);
+      const rot = { left: 0, down: -90, up: 90, right: 180 };
+      const t = this.add.image(i * 120 + 60, 240, 'arrowIcon').setAngle(rot[d]).setScale(2).setAlpha(0.6);
       this.lanes.add([r, t]);
       return r;
     });
@@ -88,12 +88,14 @@ export class UIScene extends Phaser.Scene {
   target(p) {
     const mode = controls.mode;
     if (mode === 'hidden') return null;
+    // Con un diálogo abierto, en los minijuegos el toque sirve para avanzar el texto
+    if (S.dialog?.active && (mode === 'lanes' || mode === 'tap')) return null;
     if (this.hit(p, BTN_M) && mode !== 'lanes' && mode !== 'tap') return 'menu';
     if (mode === 'lanes') {
       if (p.y < 40) return null;
       return LANE_DIRS[Math.max(0, Math.min(3, Math.floor(p.x / 120)))];
     }
-    if (mode === 'tap') return 'a';
+    if (mode === 'tap') return p.y < 40 ? null : 'a';
     if (mode !== 'world') return null;
     if (this.hit(p, BTN_A)) return 'a';
     if (this.hit(p, BTN_B)) return 'b';

@@ -146,7 +146,7 @@ async function elevatorTalk(w) {
   w.tweens.add({ targets: [d.r, d.rh], x: '-=240', duration: 600, ease: 'Cubic.InOut' });
   await w.wait(700);
   const t = txt(w, 240, 40, `PISO ${f}`, { size: 16, color: '#ff5a5a', origin: 0.5, fixed: true, depth: 9310, stroke: '#1a0a0a', strokeThickness: 4 });
-  const arrow = txt(w, 240, 70, '▲', { size: 16, color: '#ff5a5a', origin: 0.5, fixed: true, depth: 9310 });
+  const arrow = w.add.image(240, 70, 'arrowIcon').setAngle(90).setScale(2).setTint(0xff5a5a).setScrollFactor(0).setDepth(9310);
   w.tweens.add({ targets: arrow, alpha: 0.2, duration: 200, yoyo: true, repeat: -1 });
   w.shake(900, 0.002);
   audio.sfx('whoosh');

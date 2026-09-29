@@ -69,6 +69,7 @@ export class WorldScene extends Phaser.Scene {
     if (intro) this.run(() => intro);
     else if (this.zone.title) fx.titleCard(this, this.zone.title, this.zone.sub);
 
+    window.__world = this; // útil para pruebas desde la consola
     this.events.on('resume', () => {
       controls.releaseAll();
       S.ui?.setMode('world');
@@ -510,7 +511,7 @@ export class WorldScene extends Phaser.Scene {
   async pan(x, y, ms = 800) {
     const cam = this.cameras.main;
     cam.stopFollow();
-    cam.pan(x * 16 + 8, y * 16 + 8, ms, 'Sine.InOut');
+    cam.pan(x * 16 + 8, y * 16 + 8, ms, 'Sine.easeInOut');
     await this.wait(ms);
   }
 
@@ -601,7 +602,7 @@ export class WorldScene extends Phaser.Scene {
     if (opts.portal) {
       audio.sfx('flash');
       this.flash(300, [255, 230, 255]);
-      this.cameras.main.zoomTo(3, 700, 'Cubic.In');
+      this.cameras.main.zoomTo(3, 700, 'Cubic.easeIn');
       await this.wait(500);
     }
     if (!opts.keepMusic) audio.stopSong(0.8);
@@ -630,11 +631,16 @@ export class WorldScene extends Phaser.Scene {
 
   // Mostrar la letra de una canción como subtítulo
   lyric(text, ms = 2200) {
-    const t = txt(this, 240, 176, `♪ ${text} ♪`, { origin: 0.5, color: '#ffe9a0', stroke: '#120c1f', strokeThickness: 4, fixed: true, depth: 9500 });
-    t.setAlpha(0);
-    this.tweens.add({ targets: t, alpha: 1, y: 170, duration: 300 });
-    this.tweens.add({ targets: t, alpha: 0, delay: ms, duration: 300, onComplete: () => t.destroy() });
-    return t;
+    const c = this.add.container(240, 176).setScrollFactor(0).setDepth(9500);
+    const t = txt(this, 0, 0, text, { origin: 0.5, color: '#ffe9a0', stroke: '#120c1f', strokeThickness: 4 });
+    const n1 = this.add.image(-t.width / 2 - 12, 0, 'noteS');
+    const n2 = this.add.image(t.width / 2 + 12, 0, 'noteS2');
+    c.add([t, n1, n2]);
+    c.setAlpha(0);
+    this.tweens.add({ targets: c, alpha: 1, y: 170, duration: 300 });
+    this.tweens.add({ targets: [n1, n2], angle: { from: -10, to: 10 }, duration: 300, yoyo: true, repeat: -1 });
+    this.tweens.add({ targets: c, alpha: 0, delay: ms, duration: 300, onComplete: () => c.destroy() });
+    return c;
   }
 }
 

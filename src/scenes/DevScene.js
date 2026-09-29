@@ -20,6 +20,7 @@ export class DevScene extends Phaser.Scene {
       return;
     }
     const map = { piano: 'Piano', salsa: 'Salsa', code: 'Code', simon: 'Simon', final: 'FinalBattle', ending: 'Ending', title: 'Title' };
-    this.scene.start(map[kind] || 'Title', { dev: true, onDone: () => this.scene.start('Title') });
+    const q = new URLSearchParams(location.search);
+    this.scene.start(map[kind] || 'Title', { dev: true, phase: +(q.get('phase') || 1), mode: q.get('mode') || undefined, length: 3, onDone: () => this.scene.start('Title') });
   }
 }

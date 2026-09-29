@@ -827,6 +827,14 @@ export function buildIcons(scene) {
   icon('cursor', 7, 9, (g) => {
     g.pattern(0, 0, ['X....', 'XX...', 'XXX..', 'XXXX.', 'XXX..', 'XX...', 'X....'], { X: '#ffd166' });
   });
+  icon('arrowIcon', 11, 11, (g) => {
+    g.pattern(0, 0, ['....X......', '...XX......', '..XXX......', '.XXXXXXXXXX', 'XXXXXXXXXXX', 'XXXXXXXXXXX', '.XXXXXXXXXX', '..XXX......', '...XX......', '....X......'], { X: '#ffffff' });
+  });
+  icon('iconMenu', 10, 9, (g) => {
+    g.rect(0, 0, 10, 2, '#fff1d0');
+    g.rect(0, 3, 10, 2, '#fff1d0');
+    g.rect(0, 6, 10, 2, '#fff1d0');
+  }, false);
   icon('arrowDown', 7, 5, (g) => {
     g.pattern(0, 0, ['XXXXX', '.XXX.', '..X..'], { X: '#ffd166' });
   });
