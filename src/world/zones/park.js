@@ -3,6 +3,7 @@ import { audio } from '../../core/audio.js';
 import * as fx from '../../core/fx.js';
 import { controls } from '../../core/input.js';
 import { MapBuilder } from '../mapgen.js';
+import { txt } from '../../core/text.js';
 
 // ============================================================================
 // Escena 2: el parque
@@ -61,7 +62,8 @@ export default {
           return;
         }
         await w.say('vendedor', '¡Raspadillas! ¡Raspadillas heladitas!... ¿Ves? No me sale ni el grito de vendedor.', 'sad');
-        await w.say('vendedor', 'Pero feliz cumpleaños, Ray. Cuando vuelva la música, la raspadilla va por la casa.', 'happy');
+        await w.say('ray', 'Hoy es mi cumpleaños, y justo desapareció la música.', 'sad');
+        await w.say('vendedor', '¿Tu cumpleaños? ¡Feliz cumpleaños, joven! Cuando vuelva la música, la raspadilla va por la casa.', 'happy');
       },
     },
     {
@@ -74,8 +76,11 @@ export default {
     {
       id: 'vecina', char: 'vecina', x: 15, y: 8, dir: 'down', idle: 'look',
       talk: async (w) => {
-        await w.say('vecina', '¡Ray! Feliz cumpleaños, hijito. ¿Tú también sientes que falta algo? Hasta los pajaritos están callados.', 'normal');
-        if (!state.flag('park_masked')) await w.say('vecina', 'Hace rato vi unos brillitos por los arbolitos. ¿Serán notas perdidas?', 'surprised');
+        await w.say('vecina', '¡Ray! Feliz cumpleaños, sobrinito. ¿Tú también sientes que falta algo? Hasta los pajaritos están callados.', 'normal');
+        if (!state.flag('park_masked')) {
+          await w.say('vecina', 'Hace rato vi unos brillitos en el pasto. ¿Serán notas perdidas?', 'surprised');
+          await w.say('vecina', 'Acércate a un brillito con Hachi y presiona ' + (controls.isTouch ? 'el botón A.' : 'ESPACIO.') + ' Ese perrito lo encuentra todo.', 'happy');
+        }
       },
     },
   ],
@@ -109,6 +114,22 @@ export default {
 
   music: () => ({ song: 'PARK' }),
 
+  // Contador de brillitos arriba a la izquierda
+  setup: (w) => {
+    if (state.flag('park_masked')) return;
+    w.parkCounter = txt(w, 8, 8, '', { color: '#ffd166', stroke: '#120c1f', strokeThickness: 4, fixed: true, depth: 9400 });
+  },
+  update: (w) => {
+    if (!w.parkCounter) return;
+    if (state.flag('park_masked')) {
+      w.parkCounter.destroy();
+      w.parkCounter = null;
+      return;
+    }
+    const n = ['park1', 'park2', 'park3'].filter((id) => state.flag(`found_${id}`)).length;
+    w.parkCounter.setText(`Brillitos: ${n}/${LOOSE_TOTAL}`);
+  },
+
   onEnter: (w) => intro(w),
 };
 
@@ -122,7 +143,8 @@ async function intro(w) {
   audio.sfx('bark');
   w.emote(w.hachi, '!', 900);
   await w.say('hachi', '¡Guau! (Hachi olfatea el aire. Hay algo escondido por aquí.)', 'happy');
-  w.hint(controls.isTouch ? 'Lanza la pelota con B cerca de los brillitos.' : 'Lanza la pelota con X cerca de los brillitos.', 5000);
+  await w.say(null, `Busca los 3 brillitos escondidos en el parque. Acércate a uno y presiona ${controls.isTouch ? 'el botón A' : 'ESPACIO'} para que Hachi busque. También puedes lanzarle la pelota con ${controls.isTouch ? 'el botón B' : 'X'}.`);
+  w.hint('Busca los 3 brillitos del parque con Hachi.', 5000);
 }
 
 async function looseNote(w) {

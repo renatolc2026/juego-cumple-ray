@@ -57,7 +57,7 @@ export default {
     // Sala
     { id: 'piano', type: 'piano', x: 10, y: 2, talk: (w) => pianoTalk(w) },
     { type: 'familyPhoto', x: 13, y: 1, talk: (w) => w.say('ray', 'La foto familiar. Tato sale con los ojos cerrados, como siempre.') },
-    { type: 'tv', x: 16, y: 2, talk: (w) => w.say(null, 'La tele está apagada. Papá la prende en la noche para ver al Barça.') },
+    { type: 'tv', x: 16, y: 2, talk: (w) => w.say(null, 'La tele está apagada. Papá la prende en la tarde para ver al Barça.') },
     { type: 'clock', x: 19, y: 1 },
     { type: 'crossWall', x: 20, y: 1 },
     { type: 'plant', x: 21, y: 2 },
@@ -225,7 +225,7 @@ async function intro5am(w) {
   papa.face('left');
   await w.say('papa', 'Hace un ratito cantábamos lo más bien...', 'surprised');
   await w.say('ray', '¿Ma? ¿Pa? ¿Qué pasó con la canción?', 'surprised');
-  await w.say('papa', 'No sé, hijo... Bueno, feliz cumpleaños igual. Hoy me voy temprano al trabajo, pero en la noche vemos juntos al Barça.', 'normal');
+  await w.say('papa', 'No sé, hijo... Bueno, feliz cumpleaños igual. Hoy me voy temprano al trabajo, pero en la tarde vemos juntos al Barça.', 'normal');
   await w.say(null, 'En ese mismo instante, en toda Sullana... la música desapareció.');
   await w.fadeOut(900);
   dark.destroy();
@@ -256,7 +256,7 @@ async function morning(w) {
   p.face('down');
   await w.say('mama', '¡Buenos días, cumpleañero! Tu desayuno, como todos los años: pan con pollo y tu juguito de piña.', 'happy');
   await w.say('ray', 'Gracias, ma. ¿Y lo de hace rato? La canción se cortó así nomás.');
-  await w.say('mama', 'No sé, hijito. Desde esa hora no suena nada: ni la radio, ni los pajaritos, ni la vecina que canta en la ducha.', 'sad');
+  await w.say('mama', 'No sé, hijito. Desde esa hora no suena nada: ni la radio, ni los pajaritos.', 'sad');
   await w.say('mama', 'Tu papá ya se fue a trabajar, pero te dejó algo en la mesa de la cocina. Y Hachi te está esperando.', 'normal');
   await mama.walk('R4', 230);
   await mama.walkTo(26, 6, 200);
@@ -471,8 +471,8 @@ async function readLetter(w) {
   w.removeObject('letter');
   audio.sfx('item');
   await w.say(null, '"Querido Ray: la música de Sullana ahora es mía. Si la quieres de vuelta, reúne las cuatro Notas Legendarias y sube a la Torre del Silencio."');
-  await w.say(null, '"Atentamente: Ta... digo, el Maestro del Silencio."');
-  await w.say('ray', '¿"Ta... digo"? Qué firma más rara.', 'surprised');
+  await w.say(null, '"Atentamente: el Maestro del Silencio."');
+  await w.say('ray', '¿El Maestro del Silencio? Nunca había escuchado ese nombre.', 'surprised');
   await w.say('ray', 'Bueno. Si hay que buscar notas, las buscamos. ¿Vamos, Hachi?', 'happy');
   audio.sfx('bark');
   w.save();

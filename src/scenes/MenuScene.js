@@ -112,7 +112,7 @@ export class MenuScene extends Phaser.Scene {
     if (state.flag('boss_beaten')) {
       this.content.add(txt(this, 300, 222, '¡Era Tato!', { origin: [0.5, 0], color: '#ffd166', size: 8 }));
     } else if (state.flag('letter_read')) {
-      this.content.add(txt(this, 150, 206, 'La carta decía: "Ta... digo, el Maestro del Silencio".', { wrap: 300, color: '#b9a8d6' }));
+      this.content.add(txt(this, 150, 206, 'La carta venía firmada por "el Maestro del Silencio". ¿Quién será?', { wrap: 300, color: '#b9a8d6' }));
     }
   }
 

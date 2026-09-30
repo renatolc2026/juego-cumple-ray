@@ -59,7 +59,7 @@ export class WorldScene extends Phaser.Scene {
     this.startZoneMusic();
 
     // Brillitos en los objetos escondidos
-    this.time.addEvent({ delay: 2200, loop: true, callback: () => this.twinkleHidden() });
+    this.time.addEvent({ delay: 1100, loop: true, callback: () => this.twinkleHidden() });
 
     // Autoguardado al entrar a cada escena
     if (!this.zone.noSave) state.save(this.zoneId, this.spawnKey);
@@ -293,11 +293,54 @@ export class WorldScene extends Phaser.Scene {
     }
   }
 
+  // Algo escondido (brillito) cerca de una casilla
+  hiddenNear(x, y, dist = 1) {
+    return (this.zone.hidden || []).find((hd) => !state.flag(`found_${hd.id}`) && (!hd.when || hd.when(this)) && Math.abs(hd.x - x) + Math.abs(hd.y - y) <= dist);
+  }
+
+  // Hachi busca en un brillito cuando Ray presiona Espacio al lado
+  async hachiDig(found) {
+    const h = this.hachi;
+    if (h) {
+      h.busy = true;
+      audio.sfx('bark1');
+      fx.emote(this, this.player.sprite, '!', 700);
+      await this.runDog(h, found.x, found.y, 70);
+      h.face('down');
+      fx.emote(this, h.sprite, '!', 900);
+      audio.sfx('bark');
+      await this.wait(400);
+      this.tweens.add({ targets: h.sprite, x: h.sprite.x + 2, duration: 50, yoyo: true, repeat: 5 });
+      await this.wait(400);
+    }
+    fx.sparkles(this, found.x * 16 + 8, found.y * 16 + 8, 12);
+    state.setFlag(`found_${found.id}`);
+    await found.run(this, found);
+    if (h) {
+      const [bx, by] = DXY[OPP[this.player.dir]];
+      let tx = this.player.x + bx;
+      let ty = this.player.y + by;
+      if (this.blocked(tx, ty, true)) {
+        tx = this.player.x;
+        ty = this.player.y;
+      }
+      await this.runDog(h, tx, ty, 70);
+      h.face(this.player.dir);
+      h.busy = false;
+    }
+  }
+
   interact() {
     const p = this.player;
     const [dx, dy] = DXY[p.dir];
     const fx0 = p.x + dx;
     const fy0 = p.y + dy;
+    // ¿Un brillito justo al lado? Hachi busca ahí
+    const near = this.hiddenNear(fx0, fy0, 1) || this.hiddenNear(p.x, p.y, 1);
+    if (near) {
+      this.run(() => this.hachiDig(near));
+      return;
+    }
     // Personajes
     for (const a of this.actors.values()) {
       if (a === p || a.visible === false) continue;
@@ -362,8 +405,10 @@ export class WorldScene extends Phaser.Scene {
     for (const hdn of this.zone.hidden || []) {
       if (state.flag(`found_${hdn.id}`)) continue;
       if (hdn.when && !hdn.when(this)) continue;
-      const s = this.add.image(hdn.x * 16 + 8 + Phaser.Math.Between(-4, 4), hdn.y * 16 + 8 + Phaser.Math.Between(-4, 2), 'sparkle').setDepth(5000).setScale(0.3);
-      this.tweens.add({ targets: s, scale: 1, alpha: 0, duration: 700, onComplete: () => s.destroy() });
+      for (let k = 0; k < 2; k++) {
+        const s = this.add.image(hdn.x * 16 + 8 + Phaser.Math.Between(-6, 6), hdn.y * 16 + 8 + Phaser.Math.Between(-6, 4), 'sparkle').setDepth(5000).setScale(0.4);
+        this.tweens.add({ targets: s, scale: 1.4, alpha: 0, duration: 800, delay: k * 250, onComplete: () => s.destroy() });
+      }
     }
   }
 
@@ -422,7 +467,7 @@ export class WorldScene extends Phaser.Scene {
     await this.runDog(h, tx, ty, 70);
     ball.destroy();
     // ¿Hay algo escondido cerca?
-    const found = (this.zone.hidden || []).find((hd) => !state.flag(`found_${hd.id}`) && (!hd.when || hd.when(this)) && Math.abs(hd.x - tx) + Math.abs(hd.y - ty) <= 1);
+    const found = this.hiddenNear(tx, ty, 2);
     if (found) {
       h.face('down');
       fx.emote(this, h.sprite, '!', 900);
@@ -628,7 +673,7 @@ export class WorldScene extends Phaser.Scene {
 
   // Texto de ayuda breve arriba de la pantalla
   hint(text, ms = 3500) {
-    const t = txt(this, 240, 12, text, { origin: [0.5, 0], color: '#fff8ec', stroke: '#120c1f', strokeThickness: 4, fixed: true, depth: 9500, wrap: 440, align: 'center' });
+    const t = txt(this, 240, 26, text, { origin: [0.5, 0], color: '#fff8ec', stroke: '#120c1f', strokeThickness: 4, fixed: true, depth: 9500, wrap: 440, align: 'center' });
     t.setAlpha(0);
     this.tweens.add({ targets: t, alpha: 1, duration: 300 });
     this.tweens.add({ targets: t, alpha: 0, delay: ms, duration: 400, onComplete: () => t.destroy() });

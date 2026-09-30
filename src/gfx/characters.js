@@ -133,7 +133,7 @@ export const CHARS = {
     bottom: '#b58ee0', shoes: '#6a4a8a',
   },
   vendedor: {
-    name: 'Don Pepe', voice: 330,
+    name: 'Raspadillero', voice: 330,
     hair: '#8a8a94', style: 'cap', hat: '#f4f4f4',
     top: '#f4f4f4', collar: '#ffffff', sleeves: 'short', belly: true, bottom: '#4a5a7a', shoes: '#3a2a22',
   },
@@ -148,7 +148,7 @@ export const CHARS = {
     top: '#3fb5e8', collar: '#8fd3ff', sleeves: 'none', dress: true, bottom: '#3fb5e8', shoes: '#f4c04a', sparkle: '#ffffff',
   },
   vecina: {
-    name: 'Vecina', voice: 600,
+    name: 'Tía Charo', voice: 600,
     hair: '#3a2a22', style: 'bun', blush: true,
     top: '#f28c8c', collar: '#ffb0b0', sleeves: 'short', dress: true, bottom: '#f28c8c', shoes: '#8a4a4a',
   },
