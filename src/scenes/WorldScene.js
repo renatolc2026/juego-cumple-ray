@@ -70,6 +70,7 @@ export class WorldScene extends Phaser.Scene {
     else if (this.zone.title) fx.titleCard(this, this.zone.title, this.zone.sub);
 
     window.__world = this; // útil para pruebas desde la consola
+    window.__state = state;
     this.events.on('resume', () => {
       controls.releaseAll();
       S.ui?.setMode('world');
@@ -266,7 +267,9 @@ export class WorldScene extends Phaser.Scene {
     this.stepCount++;
     if (this.stepCount % 2 === 0) audio.sfx('step');
     await p.moveTo(nx, ny, dur);
-    this.checkTriggers();
+    // Solo revisar la casilla si Ray sigue parado justo ahí (si ya empezó el
+    // siguiente paso, ese paso hará su propia revisión al llegar)
+    if (p.x === nx && p.y === ny && !p.moving) this.checkTriggers();
   }
 
   hachiIdle() {
@@ -275,6 +278,7 @@ export class WorldScene extends Phaser.Scene {
 
   checkTriggers() {
     const p = this.player;
+    if (this.locked > 0 || this.transitioning) return;
     for (const t of this.zone.triggers || []) {
       const w = t.w || 1;
       const h = t.h || 1;

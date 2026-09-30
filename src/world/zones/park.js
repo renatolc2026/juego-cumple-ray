@@ -199,7 +199,7 @@ async function maskedAppears(w) {
   w.follow();
   await w.say('hachi', '¡Guau! (Hachi te trae algo que se le cayó al enmascarado.)', 'happy');
   await w.clue('bufanda');
-  await w.say('ray', '¿Una bufanda del Barça? Papá es hincha del Barça... pero papá está en la casa viendo el partido.', 'surprised');
+  await w.say('ray', '¿Una bufanda del Barça? Papá es hincha del Barça... pero papá está en el trabajo.', 'surprised');
   await w.say('ray', 'La torre... Bueno, la iglesia queda de camino. Quizá el coro sepa algo.', 'normal');
   state.setFlag('park_masked');
   w.save();

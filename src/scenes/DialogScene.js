@@ -66,6 +66,12 @@ export class DialogScene extends Phaser.Scene {
   }
 
   show(cur) {
+    // Si ya hay un diálogo abierto, este espera su turno
+    if (this.cur) {
+      this.queue = this.queue || [];
+      this.queue.push(cur);
+      return;
+    }
     this.cur = cur;
     const { who, expr } = cur;
     const ch = who ? CHARS[who] : null;
@@ -144,6 +150,8 @@ export class DialogScene extends Phaser.Scene {
     this.root.setVisible(false);
     this.choiceBox.setVisible(false);
     cur.resolve(result);
+    const next = this.queue?.shift();
+    if (next) this.show(next);
   }
 
   update(time, delta) {

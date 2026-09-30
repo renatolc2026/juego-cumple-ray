@@ -57,7 +57,7 @@ export default {
     // Sala
     { id: 'piano', type: 'piano', x: 10, y: 2, talk: (w) => pianoTalk(w) },
     { type: 'familyPhoto', x: 13, y: 1, talk: (w) => w.say('ray', 'La foto familiar. Tato sale con los ojos cerrados, como siempre.') },
-    { type: 'tv', x: 16, y: 2, talk: (w) => w.say(null, 'El Barça en la tele... pero sin sonido. Ni el narrador se escucha.') },
+    { type: 'tv', x: 16, y: 2, talk: (w) => w.say(null, 'La tele está apagada. Papá la prende en la noche para ver al Barça.') },
     { type: 'clock', x: 19, y: 1 },
     { type: 'crossWall', x: 20, y: 1 },
     { type: 'plant', x: 21, y: 2 },
@@ -75,7 +75,7 @@ export default {
     { type: 'stove', x: 24, y: 2, talk: (w) => w.say('ray', 'Huele a tallarines rojos. Mamá los hace como nadie.') },
     { type: 'counter', x: 25, y: 2 },
     { type: 'fridge', x: 28, y: 2 },
-    { type: 'table', x: 24, y: 4 },
+    { type: 'table', x: 24, y: 4, talk: (w) => tableTalk(w) },
     { type: 'chair', x: 23, y: 4 },
     { type: 'chair', x: 26, y: 4 },
     // Patios
@@ -91,9 +91,6 @@ export default {
   actors: () => {
     const list = [];
     if (state.flag('home_morning')) {
-      list.push({
-        id: 'papa', char: 'papa', x: 18, y: 4, dir: 'up', idle: 'look', talk: (w) => papaTalk(w),
-      });
       list.push({ id: 'mama', char: 'mama', x: 26, y: 6, dir: 'left', idle: 'look', talk: (w) => mamaTalk(w) });
       list.push({
         id: 'micha', char: 'micha', x: 11, y: 2, frame: 16, depthBias: 8, emote: 'zzz', turn: false,
@@ -123,7 +120,12 @@ export default {
       x: 15, y: 16, w: 2, h: 1,
       run: async (w) => {
         if (!state.flag('note_hogar')) {
-          await w.say('ray', 'Todavía no. Algo raro está pasando en la casa...');
+          let msg = 'Todavía no. Algo raro está pasando en la casa...';
+          if (!state.flag('piano_tried')) msg = 'Todavía no. ¿Qué le pasó a la música? Quiero probar el piano de la sala.';
+          else if (!state.flag('hachi_joined')) msg = 'No me voy sin Hachi. ¡Primero hay que recuperar su pelota!';
+          else if (!state.flag('got_tallarines')) msg = 'Mamá quería verme en la cocina antes de salir.';
+          else if (!state.flag('got_mapa')) msg = 'Papá me dejó algo en la mesa de la cocina. Mejor lo reviso.';
+          await w.say('ray', msg);
           await w.player.walk('U1');
           return;
         }
@@ -223,6 +225,7 @@ async function intro5am(w) {
   papa.face('left');
   await w.say('papa', 'Hace un ratito cantábamos lo más bien...', 'surprised');
   await w.say('ray', '¿Ma? ¿Pa? ¿Qué pasó con la canción?', 'surprised');
+  await w.say('papa', 'No sé, hijo... Bueno, feliz cumpleaños igual. Hoy me voy temprano al trabajo, pero en la noche vemos juntos al Barça.', 'normal');
   await w.say(null, 'En ese mismo instante, en toda Sullana... la música desapareció.');
   await w.fadeOut(900);
   dark.destroy();
@@ -251,10 +254,10 @@ async function morning(w) {
   await mama.walk('L4', 260);
   mama.face('up');
   p.face('down');
-  await w.say('mama', '¡Buenos días, cumpleañero! Tu desayuno, como todos los años: pan con palta y tu juguito de papaya.', 'happy');
+  await w.say('mama', '¡Buenos días, cumpleañero! Tu desayuno, como todos los años: pan con pollo y tu juguito de piña.', 'happy');
   await w.say('ray', 'Gracias, ma. ¿Y lo de hace rato? La canción se cortó así nomás.');
   await w.say('mama', 'No sé, hijito. Desde esa hora no suena nada: ni la radio, ni los pajaritos, ni la vecina que canta en la ducha.', 'sad');
-  await w.say('mama', 'Tu papá está en la sala viendo el partido. Y Hachi te está esperando.', 'normal');
+  await w.say('mama', 'Tu papá ya se fue a trabajar, pero te dejó algo en la mesa de la cocina. Y Hachi te está esperando.', 'normal');
   await mama.walk('R4', 230);
   await mama.walkTo(26, 6, 200);
   mama.face('left');
@@ -265,29 +268,16 @@ async function morning(w) {
 }
 
 // ---------------------------------------------------------------------------
-async function papaTalk(w) {
-  const papa = w.actor('papa');
-  if (state.flag('hachi_joined') && !state.flag('got_mapa')) {
-    await w.say('papa', 'Oye, Ray. Si vas a salir, llévate esto: un mapa de Sullana.');
-    await w.say('papa', 'Algo me dice que hoy vas a caminar bastante.', 'happy');
-    await w.give('mapa');
-    state.setFlag('got_mapa');
-    await checkNote(w);
+async function tableTalk(w) {
+  if (state.flag('got_mapa')) {
+    await w.say(null, 'La mesa del comedor. Todavía huele a pan con pollo.');
     return;
   }
-  if (!state.flag('papa_talked')) {
-    state.setFlag('papa_talked');
-    await w.say('papa', 'Feliz cumpleaños, Ray. Hoy juega el Barça, así que no te demores mucho.', 'happy');
-    await w.say('papa', 'Aunque la tele no tiene sonido... ¡ni el himno se escucha! Qué cosa más rara.', 'sad');
-    papa.face('up');
-    return;
-  }
-  if (state.flag('note_hogar')) {
-    await w.say('papa', 'Cuídate, hijo. Y si ves al que se llevó la música, dile que devuelva el sonido de la tele.', 'happy');
-  } else {
-    await w.say('papa', 'El Barça va ganando... creo. Sin sonido uno no sabe ni cuándo es gol.');
-  }
-  papa.face('up');
+  await w.say(null, 'Sobre la mesa hay un mapa doblado con una nota de papá:');
+  await w.say('papa', '"Para el cumpleañero. Algo me dice que hoy vas a caminar bastante. Nos vemos en la noche."', 'happy');
+  await w.give('mapa');
+  state.setFlag('got_mapa');
+  await checkNote(w);
 }
 
 async function mamaTalk(w) {
@@ -423,7 +413,7 @@ async function catchShiro(w) {
   await w.say('hachi', '¡Guau! (Hachi no se va a despegar de ti en todo el día.)', 'happy');
   w.hint(`Lanza la pelota con ${bWord()}. Acaricia a Hachi con ${aWord()}.`, 5500);
   await w.wait(400);
-  await w.say('ray', 'Mamá y papá querían verme antes de salir. Vamos, Hachi.');
+  await w.say('ray', 'Mamá quería verme antes de salir. Y papá me dejó algo en la mesa de la cocina. Vamos, Hachi.');
 }
 
 async function fxBanner(w) {
@@ -449,7 +439,7 @@ async function checkNote(w) {
     await w.wait(220);
   }
   fx.notesBurst(w, micha.sprite.x, micha.sprite.y - 12, 12);
-  await w.say('papa', '¡¿Escucharon eso?! ¡Sonó el piano!', 'surprised');
+  await w.say('ray', '¡¿Escuchaste, ma?! ¡Sonó el piano!', 'surprised');
   await w.say('mama', '¡Micha lo hizo sonar! La música no se fue del todo...', 'surprised');
   // La nota dorada sale del piano
   const note = w.add.image(w.obj('piano').sprite.x, 20, 'nota_hogar').setDepth(8000).setScale(0.2);
