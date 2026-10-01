@@ -19,11 +19,12 @@ const CARDS = [
   { caption: 'Ray y Hachi', bg: 0x6cc251, floor: 0x5fb247, chars: [['ray', 0], ['hachi', 17]], extra: 'ball' },
   { caption: 'Papá, mamá, Micha y Shiro', bg: 0xf6e3c0, floor: 0xc88a52, chars: [['papa', 0], ['mama', 0], ['micha', 0], ['shiro', 0]] },
   { caption: 'El coro: Juanmi, Anita, Mariana, Nicol, Angela y Mimi', bg: 0xfbf7ee, floor: 0xe9e1d0, chars: [['juanmi', 16], ['anita', 0], ['mariana', 16], ['nicol', 0], ['angela', 16], ['mimi', 0]] },
-  { caption: 'Sharon y el Salón del Sabor', bg: 0x5a2a78, floor: 0x3a2a60, chars: [['bailarin', 16], ['sharon', 16], ['bailarina', 16]], extra: 'disco' },
+  { caption: 'Sharon y su academia de salsa', bg: 0x5a2a78, floor: 0x3a2a60, chars: [['bailarin', 16], ['sharon', 16], ['bailarina', 16]], extra: 'disco' },
   { caption: 'Ricardo, Bismark y los programadores de Piura', bg: 0x243a38, floor: 0x1c2a2a, chars: [['ricardo', 0], ['bismark', 16], ['dev1', 0], ['dev2', 16], ['dev3', 0]] },
   { caption: 'César, Elbers y Martín: los de siempre', bg: 0x8fd3ff, floor: 0x6cc251, chars: [['cesar', 16], ['elbers', 16], ['martin', 16]] },
   { caption: 'Tato y Aurora, desde Lima', bg: 0x1a1a22, floor: 0x1a1a22, phone: true },
   { caption: 'HCJ · Siempre acompañándote', bg: 0x3a2a4a, floor: 0x2a6e35, bench: true },
+  { caption: 'Pipo, Moisés, Isis y Bobby · Siempre en nuestro corazón', bg: 0xffe9b0, floor: 0x6cc251, chars: [['shiro', 0], ['hachi', 0], ['shiro', 0], ['hachi', 0]] },
 ];
 
 export class EndingScene extends Phaser.Scene {

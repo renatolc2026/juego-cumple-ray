@@ -7,7 +7,7 @@ function fresh() {
     zone: 'home',
     spawn: null,
     flags: {},
-    items: { tallarines: 0, bendicion: 0, bufanda: 0, mapa: 0, llavero: 0, postit: 0 },
+    items: { tallarines: 0, bendicion: 0, billetera: 0, mapa: 0, llave: 0, postit: 0 },
     notes: [],
     clues: [],
     startedAt: Date.now(),
@@ -34,8 +34,8 @@ export const ITEMS = {
   tallarines: { name: 'Tallarines de mamá', icon: 'tallarines', desc: 'Un táper con los tallarines rojos de mamá. Recupera mucho ánimo en la batalla final.' },
   bendicion: { name: 'Bendición del Abuelo', icon: 'bendicion', desc: 'Una luz cálida que te acompaña. Recupera todo el ánimo en la batalla final.' },
   mapa: { name: 'Mapa de Sullana', icon: 'mapa', desc: 'El mapa que te dejó papá antes de irse a trabajar. Muestra el camino hacia la Torre del Silencio.' },
-  bufanda: { name: 'Bufanda del Barça', icon: 'bufanda', desc: 'Se le cayó al Maestro del Silencio en el parque. ¿Quién será hincha del Barça...?' },
-  llavero: { name: 'Llavero de Lima', icon: 'llavero', desc: 'Se le cayó al enmascarado en el Salón del Sabor. Dice "Recuerdo de Lima".' },
+  billetera: { name: 'Billetera marrón', icon: 'billetera', desc: 'Se le cayó al Maestro del Silencio en la plaza. No tiene ningún documento ni nombre. ¿De quién será?' },
+  llave: { name: 'Llave misteriosa', icon: 'llave', desc: 'Se le cayó al enmascarado en la academia de Sharon. ¿Qué puerta abrirá?' },
   postit: { name: 'Nota adhesiva', icon: 'postit', desc: 'Dice: "No olvidar: torta para Ray. Y tallarines." ¿Qué letra es esa...?' },
 };
 

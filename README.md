@@ -21,13 +21,16 @@ El diseño completo está en [`DISENO.md`](DISENO.md).
 
 ## Recorrido
 
-1. **Prólogo, casa de Sullana**: 5:00 a. m., la canción de papá y mamá se corta y la música desaparece. Micha, Shiro, Hachi, los tallarines, el mapa y la **Nota del Hogar**.
-2. **El parque**: Hachi encuentra notas sueltas con la pelota. Primera aparición del Maestro del Silencio (y su bufanda del Barça).
-3. **La iglesia**: el coro, minijuego de piano y la **Nota de la Fe**. En el jardín, la banca "HCJ" y la Bendición del Abuelo.
-4. **El Salón del Sabor**: batalla de salsa contra Sharon, con paso especial estilo anime, y la **Nota del Sabor**.
-5. **La Cueva del Código**: puzzle para ordenar el código del portal. Llegan César, Elbers y Martín con la **Nota de la Amistad**.
-6. **La Torre del Silencio**: siete pisos con ascensor. Cada piso recupera su color. En el séptimo, batalla final en tres fases: piano, salsa y la pelota de Hachi.
-7. **Final**: la revelación, la fiesta en casa con videollamada de Tato y Aurora, la canción completa, el mensaje final y los créditos.
+1. **Prólogo, casa de Sullana**: 5:00 a. m., la canción de papá y mamá se corta y la música desaparece. Micha, Shiro, Hachi, los tallarines, el mapa que dejó papá y la **Nota del Hogar**.
+2. **Plaza de Armas de Sullana**: Hachi busca los brillitos (Espacio junto a un brillito o la pelota con X). Aparece el Maestro del Silencio y se le cae una billetera marrón.
+3. **Parroquia Santa Beatriz (Lima)**: el coro, el minijuego de piano y la **Nota de la Fe**.
+4. **Jardín de los Recuerdos**: la banca "HCJ", la Bendición del Abuelo y la visita de Pipo, Moisés, Isis y Bobby.
+5. **Academia de Sharon**: batalla de salsa con paso especial estilo anime y la **Nota del Sabor**.
+6. **La Cueva del Código**: puzzle para ordenar el código del portal. Llegan César, Elbers y Martín con la **Nota de la Amistad**.
+7. **La Torre del Silencio**: en el primer piso, el eco hace tres preguntas sobre Ray. Luego el ascensor sube a la azotea, donde está la batalla final en tres fases: piano, salsa y la pelota de Hachi.
+8. **Final**: la revelación, la fiesta en casa con videollamada de Tato y Aurora, la canción completa, el mensaje final y los créditos.
+
+Arriba a la izquierda siempre se muestra el objetivo actual, y unos puntitos aparecen sobre lo que se puede revisar.
 
 ## Probarlo en tu computadora
 
@@ -64,8 +67,9 @@ Si el celular está en el mismo wifi que la computadora, ábrela en el navegador
 
 - **Personajes** (colores, peinado, lentes, nombres): `src/gfx/characters.js`.
   - Aurora tiene un aspecto provisional (cabello castaño largo, vestido lila) porque el documento lo deja pendiente.
-  - Los otros tres programadores se llaman "Programador" y "Programadora" hasta tener sus nombres (`dev1`, `dev2`, `dev3`).
-- **Frase del abuelito Humberto** (pendiente de aprobación): `src/world/zones/church.js`, función `benchHCJ`.
+  - Dos programadores siguen como "Programador" (`dev1`, `dev3`); `dev2` es Nico.
+- **Banca HCJ y mascotas**: `src/world/zones/recuerdos.js`.
+- **Preguntas de la torre**: `src/world/zones/tower.js`, constante `QUIZ`.
 - **Mensaje final**: `src/scenes/EndingScene.js`, constante `FINAL_MESSAGE`.
 - **Fotos en los créditos**: lee `public/fotos/LEEME.txt`. El juego convierte las fotos en postales de pixel art.
 - **Música**: toda es original y se genera en el navegador. Las partituras están en `src/core/songs.js`.
@@ -84,9 +88,9 @@ dev/                   herramientas de prueba (capturas con Playwright)
 
 ### Atajos de prueba
 
-- `?dev=zone:park` abre una zona directamente. También funciona con `church`, `garden`, `salsa`, `cave`, `tower` y `party`.
+- `?dev=zone:park` abre una zona directamente. También funciona con `garden`, `church`, `recuerdos`, `salsa`, `cave`, `tower` y `party`.
 - `&flags=hachi_joined&notes=hogar,fe` activa banderas y notas.
-- `&floor=7` elige el piso de la torre.
+- `&floor=7` va directo a la azotea de la torre.
 - `&autowin=1` gana los minijuegos al instante.
 - `?dev=piano`, `salsa`, `code`, `simon`, `final` (con `&phase=2` o `3`) y `ending` abren un minijuego suelto.
 

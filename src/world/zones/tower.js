@@ -20,17 +20,20 @@ m.checker(8, 5, 6, 5, ',', '.');
 const MAP = m.build();
 
 // Tipo de prueba por piso
+// Solo dos paradas: el primer piso (las preguntas del eco) y la azotea del Maestro
 const FLOORS = {
-  1: { kind: 'simon', len: 3, name: 'Piso 1: la sala de espera' },
-  2: { kind: 'salsa', name: 'Piso 2: la oficina sin ritmo' },
-  3: { kind: 'hachi', spot: [4, 10], name: 'Piso 3: el archivo perdido' },
-  4: { kind: 'simon', len: 4, name: 'Piso 4: el piano mudo' },
-  5: { kind: 'salsa', name: 'Piso 5: el pasillo congelado' },
-  6: { kind: 'hachi', spot: [18, 4], name: 'Piso 6: el depósito' },
+  1: { kind: 'quiz', name: 'Piso 1: la recepción' },
   7: { kind: 'boss', name: 'Piso 7: la azotea del silencio' },
 };
 
-const floor = () => state.data.flags.towerFloor || 1;
+// Preguntas que solo alguien que conoce a Ray puede responder
+const QUIZ = [
+  { q: '...Shhh... Primera pregunta: ¿cuál es el Pokémon de fuego favorito de Ray?', options: ['Arcanine', 'Charizard', 'Blaziken', 'Infernape'], ok: 1 },
+  { q: '...Shhh... Segunda pregunta: ¿cuál es el anime favorito de Ray?', options: ['Naruto', 'Dragon Ball', 'One Piece', 'Death Note'], ok: 2 },
+  { q: '...Shhh... Última pregunta: ¿cuál es el instrumento favorito de Ray?', options: ['Piano', 'Guitarra', 'Batería', 'Violín'], ok: 0 },
+];
+
+const floor = () => (state.data.flags.towerFloor === 7 ? 7 : 1);
 const floorDone = (f = floor()) => state.flag(`tower_done_${f}`);
 
 export default {
@@ -77,9 +80,13 @@ export default {
   music: () => {
     const f = floor();
     if (f === 7 && state.flag('boss_beaten')) return { song: TITLE, clarity: 1 };
-    return { song: 'TOWER', level: f, clarity: floorDone() ? 0.85 : 0.35 + f * 0.05 };
+    return { song: 'TOWER', level: f, clarity: floorDone() ? 0.9 : 0.6 };
   },
   onEnter: (w) => enterFloor(w),
+  objective: () => {
+    if (floor() === 7) return null;
+    return floorDone() ? 'Sube al ascensor' : 'Habla con el eco';
+  },
   update: (w, time) => {
     const e = w.actor('eco');
     if (e) e.sprite.setAlpha(0.65 + Math.sin(time / 300) * 0.2);
@@ -139,7 +146,7 @@ async function elevatorTalk(w) {
     if (w.player.y <= 2) await w.player.walk('D1');
     return;
   }
-  // Subir al siguiente piso
+  // Subir directo a la azotea
   const d = doors(w, true);
   audio.sfx('door');
   w.tweens.add({ targets: [d.l, d.lh], x: '+=240', duration: 600, ease: 'Cubic.InOut' });
@@ -150,42 +157,37 @@ async function elevatorTalk(w) {
   w.tweens.add({ targets: arrow, alpha: 0.2, duration: 200, yoyo: true, repeat: -1 });
   w.shake(900, 0.002);
   audio.sfx('whoosh');
-  await w.wait(700);
-  t.setText(`PISO ${f + 1}`);
+  for (let n = f + 1; n <= 7; n++) {
+    await w.wait(260);
+    t.setText(`PISO ${n}`);
+    audio.sfx('cursor');
+  }
   await w.wait(400);
-  state.data.flags.towerFloor = f + 1;
+  state.data.flags.towerFloor = 7;
   w.transitioning = true;
   audio.stopSong(0.5);
   w.scene.restart({ zone: 'tower', spawn: 'default' });
 }
 
 async function ecoTalk(w) {
-  const f = floor();
-  const cfg = FLOORS[f];
   const eco = w.actor('eco');
-  if (cfg.kind === 'hachi') {
-    if (!state.flag(`eco_${f}`)) {
-      state.setFlag(`eco_${f}`);
-      await w.say('eco', '...Shhh... El sonido de este piso está escondido... Nadie lo encontrará...');
-      await w.say('ray', 'Hachi, ¿lo hueles? Busquemos entre las cajas.', 'normal');
-      w.emote(w.hachi, '!', 800);
-      audio.sfx('bark1');
-    } else {
-      await w.say('eco', '...Shhh...');
+  await w.say('eco', '...Shhh... Nadie sube a la azotea del Maestro... a menos que conozca a Ray de verdad.');
+  await w.say('eco', '...Responde mis tres preguntas y el ascensor te llevará arriba...');
+  for (const item of QUIZ) {
+    for (;;) {
+      const r = await w.ask('eco', item.q, item.options);
+      if (r === item.ok) {
+        audio.sfx('success');
+        fx.notesBurst(w, eco.sprite.x, eco.sprite.y - 16, 8);
+        await w.say('eco', `...${item.options[r]}... Correcto...`);
+        break;
+      }
+      audio.sfx('error');
+      w.shake(150, 0.003);
+      await w.say('eco', '...Shhh... No... Piénsalo otra vez...');
     }
-    return;
   }
-  const intros = {
-    1: '...Shhh... Aquí nadie toca... nadie recuerda las melodías...',
-    2: '...Shhh... En esta oficina está prohibido bailar...',
-    4: '...Shhh... Este piano no volverá a sonar... a menos que recuerdes...',
-    5: '...Shhh... Tus pies están cansados... no podrás seguir el ritmo...',
-  };
-  await w.say('eco', intros[f] || '...Shhh...');
-  const r = await w.ask('ray', cfg.kind === 'simon' ? '¿Repetir la melodía del eco?' : '¿Bailar contra el eco?', ['¡Sí!', 'Espera']);
-  if (r !== 0) return;
-  if (cfg.kind === 'simon') await w.minigame('Simon', { length: cfg.len, floor: f });
-  else await w.minigame('Salsa', { mode: 'tower', floor: f });
+  await w.say('ray', 'Fácil. Esas preguntas me las sé de memoria.', 'happy');
   await floorCleared(w, eco);
 }
 
@@ -270,8 +272,8 @@ async function reveal(w) {
   await w.wait(800);
   await w.say('tato', 'Sorpresa, Ray. Soy yo, Tato.', 'happy');
   await w.say('tato', 'Este año no podía estar en Sullana, así que me metí al juego para acompañarte.', 'happy');
-  await w.say('ray', '¿Tato? ...Con razón tanta bufanda del Barça.', 'surprised');
-  await w.say('tato', 'Y el llavero de Lima. Y lo del desayuno. Y la carta... Sí, como villano no me va muy bien.', 'normal');
+  await w.say('ray', '¿Tato? ...Con razón esa billetera marrón me parecía conocida.', 'surprised');
+  await w.say('tato', 'Y la llave. Y lo del desayuno. Y la carta... Sí, como villano no me va muy bien.', 'normal');
   await w.say('tato', 'Pero todo esto era para que hoy no te faltara nada: tu casa, tu fe, tu salsa y tus amigos. Esa es tu música, Ray.', 'happy');
   // Hachi salta a saludar a Tato
   await w.runDog(w.hachi, 10, 7, 80);

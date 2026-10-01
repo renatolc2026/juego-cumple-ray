@@ -10,9 +10,9 @@ const TABS = ['Objetos', 'Notas', 'Pistas', 'Mapa', 'Opciones', 'Volver'];
 
 const PLACES = [
   { id: 'home', name: 'Casa', x: 40, y: 150 },
-  { id: 'park', name: 'Parque', x: 100, y: 110 },
+  { id: 'park', name: 'Plaza de Armas', x: 100, y: 110 },
   { id: 'garden', alt: 'church', name: 'Iglesia', x: 170, y: 140 },
-  { id: 'salsa', name: 'Salón del Sabor', x: 240, y: 80 },
+  { id: 'salsa', name: 'Academia de Sharon', x: 240, y: 80 },
   { id: 'cave', name: 'Cueva del Código', x: 200, y: 40 },
   { id: 'tower', name: 'Torre', x: 290, y: 30 },
 ];
@@ -97,7 +97,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   drawClues() {
-    const clues = ['bufanda', 'llavero', 'postit'].filter((k) => state.item(k) > 0);
+    const clues = ['billetera', 'llave', 'postit'].filter((k) => state.item(k) > 0);
     this.content.add(txt(this, 300, 26, '¿Quién es el Maestro del Silencio?', { origin: [0.5, 0], color: '#ffd166' }));
     if (!clues.length) {
       this.content.add(txt(this, 150, 56, 'Aún no hay pistas. El enmascarado parece muy misterioso... ¿o no?', { wrap: 300, color: '#b9a8d6' }));

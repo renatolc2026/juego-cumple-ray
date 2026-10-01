@@ -12,7 +12,7 @@ import * as fx from '../core/fx.js';
 import { txt } from '../core/text.js';
 
 const SAT_BY_NOTES = [0.22, 0.45, 0.65, 0.84, 1];
-const CLARITY_BY_NOTES = [0.05, 0.35, 0.6, 0.8, 1];
+const CLARITY_BY_NOTES = [0.42, 0.56, 0.7, 0.85, 1];
 
 export class WorldScene extends Phaser.Scene {
   constructor() {
@@ -57,6 +57,7 @@ export class WorldScene extends Phaser.Scene {
 
     this.zone.setup?.(this);
     this.startZoneMusic();
+    this.buildHud();
 
     // Brillitos en los objetos escondidos
     this.time.addEvent({ delay: 1100, loop: true, callback: () => this.twinkleHidden() });
@@ -75,6 +76,59 @@ export class WorldScene extends Phaser.Scene {
       controls.releaseAll();
       S.ui?.setMode('world');
     });
+  }
+
+  // ------------------------------------------------------------------ Objetivo e indicador
+  buildHud() {
+    // Objetivo actual, arriba a la izquierda
+    this.objBox = this.add.container(4, 4).setScrollFactor(0).setDepth(9300).setAlpha(0);
+    this.objBg = this.add.rectangle(0, 0, 10, 15, 0x120c1f, 0.78).setOrigin(0).setStrokeStyle(1, 0xffd166, 0.7);
+    this.objIcon = this.add.image(8, 7.5, 'noteS').setScale(0.9);
+    this.objTxt = txt(this, 16, 4, '', { color: '#fff1d0' });
+    this.objBox.add([this.objBg, this.objIcon, this.objTxt]);
+    this.objReady = false;
+    this.time.delayedCall(this.zone.title ? 3400 : 600, () => (this.objReady = true));
+    this.time.addEvent({ delay: 300, loop: true, callback: () => this.refreshObjective() });
+    // Indicador sobre lo que se puede revisar con A / Espacio
+    this.prompt = this.add.image(0, 0, 'emote_dots').setDepth(8990).setVisible(false).setScale(0.85);
+  }
+
+  refreshObjective() {
+    const o = this.objReady && !this.transitioning && !this.locked ? this.zone.objective?.(this) : null;
+    if (!o) {
+      if (this.objBox.alpha > 0 && !this.objFading) {
+        this.objFading = true;
+        this.tweens.add({ targets: this.objBox, alpha: 0, duration: 250, onComplete: () => (this.objFading = false) });
+      }
+      return;
+    }
+    if (o !== this.objLast) {
+      this.objLast = o;
+      this.objTxt.setText(o);
+      this.objBg.width = this.objTxt.width + 22;
+      this.objBox.setAlpha(0);
+      this.tweens.add({ targets: this.objBox, alpha: 1, duration: 300 });
+      this.tweens.add({ targets: this.objIcon, angle: { from: -20, to: 20 }, duration: 200, yoyo: true, repeat: 3 });
+    } else if (this.objBox.alpha === 0 && !this.objFading) {
+      this.tweens.add({ targets: this.objBox, alpha: 1, duration: 300 });
+    }
+  }
+
+  // ¿Qué hay frente a Ray que se pueda revisar?
+  facingTarget() {
+    const p = this.player;
+    const [dx, dy] = DXY[p.dir];
+    const fx0 = p.x + dx;
+    const fy0 = p.y + dy;
+    const hid = this.hiddenNear(fx0, fy0, 1) || this.hiddenNear(p.x, p.y, 1);
+    if (hid) return { x: hid.x * 16 + 8, y: hid.y * 16 };
+    for (const a of this.actors.values()) {
+      if (a === p || a.visible === false) continue;
+      if (a.x === fx0 && a.y === fy0 && (a.def.talk || a === this.hachi)) return { x: a.sprite.x, y: a.sprite.y - a.sprite.displayHeight - 2 };
+    }
+    const o = this.objectAt(fx0, fy0) || this.objectAt(fx0 + dx, fy0 + dy);
+    if (o && o.talk) return { x: o.sprite.x, y: o.sprite.y - o.sprite.displayHeight - 2 };
+    return null;
   }
 
   // ------------------------------------------------------------------ Mapa
@@ -221,7 +275,13 @@ export class WorldScene extends Phaser.Scene {
   update(time, delta) {
     for (const a of this.actors.values()) if (!a.moving) a.sync();
     this.zone.update?.(this, time, delta);
-    if (this.locked > 0 || this.transitioning || S.dialog?.active) return;
+    const busy = this.locked > 0 || this.transitioning || S.dialog?.active;
+    if (this.prompt) {
+      const t = !busy && !this.player.moving ? this.facingTarget() : null;
+      this.prompt.setVisible(!!t);
+      if (t) this.prompt.setPosition(t.x, t.y - 4 + Math.sin(time / 180) * 1.5).setOrigin(0.5, 1);
+    }
+    if (busy) return;
 
     if (controls.consume('menu')) {
       this.openMenu();

@@ -6,7 +6,7 @@ import { MapBuilder } from '../mapgen.js';
 import { txt } from '../../core/text.js';
 
 // ============================================================================
-// Escena 2: el parque
+// Escena 2: la Plaza de Armas de Sullana
 // ============================================================================
 
 const m = new MapBuilder(38, 24, 'g');
@@ -29,7 +29,7 @@ const LOOSE_TOTAL = 3;
 
 export default {
   id: 'park',
-  title: 'El Parque',
+  title: 'Plaza de Armas',
   sub: 'Sullana, 10:00 a. m.',
   map: MAP,
   spawns: { default: { x: 4, y: 21, dir: 'up' } },
@@ -49,8 +49,9 @@ export default {
     { type: 'flowers', x: 15, y: 13 }, { type: 'flowers', x: 20, y: 13 },
     { type: 'flowers', x: 7, y: 11 }, { type: 'flowers', x: 29, y: 10 }, { type: 'flowers', x: 2, y: 18 },
     { type: 'bin', x: 24, y: 7 }, { type: 'bin', x: 6, y: 15 },
-    { type: 'sign', x: 6, y: 21, talk: (w) => w.say(null, '"Parque de Sullana. Prohibido estar triste en cumpleaños."') },
-    { type: 'sign', x: 30, y: 2, talk: (w) => w.say(null, '"Iglesia: siga el camino hacia el norte."') },
+    { type: 'sign', x: 6, y: 21, talk: (w) => w.say(null, '"Plaza de Armas de Sullana. Prohibido estar triste en cumpleaños."') },
+    { type: 'sign', x: 30, y: 2, talk: (w) => w.say(null, '"Salida norte de la plaza."') },
+    { id: 'portalLima', type: 'portal', x: 31, y: 0, oy: 8, when: () => state.flag('park_masked'), talk: (w) => w.goto('garden', 'default', { portal: true, white: true }) },
   ],
 
   actors: () => [
@@ -69,14 +70,14 @@ export default {
     {
       id: 'nino', char: 'nino', x: 22, y: 14, dir: 'left', idle: 'look',
       talk: async (w) => {
-        await w.say('nino', 'Quería bailar con la música del parque, pero no suena nada...', 'sad');
+        await w.say('nino', 'Quería bailar con la música de la plaza, pero no suena nada...', 'sad');
         await w.say('nino', '¡Tu perrito es bien bonito! ¿Busca cosas cuando le tiras la pelota?', 'happy');
       },
     },
     {
       id: 'vecina', char: 'vecina', x: 15, y: 8, dir: 'down', idle: 'look',
       talk: async (w) => {
-        await w.say('vecina', '¡Ray! Feliz cumpleaños, sobrinito. ¿Tú también sientes que falta algo? Hasta los pajaritos están callados.', 'normal');
+        await w.say('vecina', '¡Ray! ¡Feliz cumpleaños! ¿Tú también sientes que falta algo? Hasta los pajaritos están callados.', 'normal');
         if (!state.flag('park_masked')) {
           await w.say('vecina', 'Hace rato vi unos brillitos en el pasto. ¿Serán notas perdidas?', 'surprised');
           await w.say('vecina', 'Acércate a un brillito con Hachi y presiona ' + (controls.isTouch ? 'el botón A.' : 'ESPACIO.') + ' Ese perrito lo encuentra todo.', 'happy');
@@ -93,14 +94,14 @@ export default {
 
   triggers: [
     {
-      x: 31, y: 0, w: 3, h: 1,
+      x: 31, y: 0, w: 3, h: 2,
       run: async (w) => {
         if (!state.flag('park_masked')) {
-          await w.say('ray', 'Hachi quiere seguir jugando un rato más en el parque. Esos brillitos en el pasto...');
+          await w.say('ray', 'Hachi quiere seguir jugando un rato más en la plaza. Esos brillitos en el pasto...');
           await w.player.walk('D1');
           return;
         }
-        await w.goto('garden', 'default');
+        await w.goto('garden', 'default', { portal: true, white: true });
       },
     },
     {
@@ -114,37 +115,27 @@ export default {
 
   music: () => ({ song: 'PARK' }),
 
-  // Contador de brillitos arriba a la izquierda
-  setup: (w) => {
-    if (state.flag('park_masked')) return;
-    w.parkCounter = txt(w, 8, 8, '', { color: '#ffd166', stroke: '#120c1f', strokeThickness: 4, fixed: true, depth: 9400 });
-  },
-  update: (w) => {
-    if (!w.parkCounter) return;
-    if (state.flag('park_masked')) {
-      w.parkCounter.destroy();
-      w.parkCounter = null;
-      return;
-    }
+  objective: () => {
+    if (state.flag('park_masked')) return 'Entra al portal del norte';
     const n = ['park1', 'park2', 'park3'].filter((id) => state.flag(`found_${id}`)).length;
-    w.parkCounter.setText(`Brillitos: ${n}/${LOOSE_TOTAL}`);
+    return `Busca brillitos con Hachi (${n}/${LOOSE_TOTAL})`;
   },
 
   onEnter: (w) => intro(w),
 };
 
 async function intro(w) {
-  fx.titleCard(w, 'El Parque', 'Sullana, 10:00 a. m.');
+  fx.titleCard(w, 'Plaza de Armas', 'Sullana, 10:00 a. m.');
   if (state.flag('park_intro')) return;
   state.setFlag('park_intro');
   await w.wait(900);
-  await w.say(null, 'El parque de siempre. Ray y Hachi vienen aquí casi todas las tardes.');
+  await w.say(null, 'Ray llevó a Hachi a pasear a la Plaza de Armas de Sullana.');
   await w.say('ray', 'Qué silencio... Ni el agua de la pileta suena.', 'sad');
   audio.sfx('bark');
   w.emote(w.hachi, '!', 900);
   await w.say('hachi', '¡Guau! (Hachi olfatea el aire. Hay algo escondido por aquí.)', 'happy');
-  await w.say(null, `Busca los 3 brillitos escondidos en el parque. Acércate a uno y presiona ${controls.isTouch ? 'el botón A' : 'ESPACIO'} para que Hachi busque. También puedes lanzarle la pelota con ${controls.isTouch ? 'el botón B' : 'X'}.`);
-  w.hint('Busca los 3 brillitos del parque con Hachi.', 5000);
+  await w.say(null, `Busca los 3 brillitos escondidos en la plaza. Acércate a uno y presiona ${controls.isTouch ? 'el botón A' : 'ESPACIO'} para que Hachi busque. También puedes lanzarle la pelota con ${controls.isTouch ? 'el botón B' : 'X'}.`);
+  w.hint('Busca los 3 brillitos de la plaza con Hachi.', 5000);
 }
 
 async function looseNote(w) {
@@ -212,7 +203,7 @@ async function maskedAppears(w) {
   await w.wait(300);
   w.removeActor('maestro');
   // Dejó algo tirado
-  const scarf = w.add.image(scarfX * 16 + 8, scarfY * 16 + 10, 'bufanda').setDepth(scarfY * 16 + 10);
+  const scarf = w.add.image(scarfX * 16 + 8, scarfY * 16 + 10, 'billetera').setDepth(scarfY * 16 + 10);
   w.emote(w.hachi, '!', 800);
   audio.sfx('bark');
   await w.runDog(w.hachi, scarfX, scarfY + 1, 80);
@@ -220,10 +211,20 @@ async function maskedAppears(w) {
   await w.runDog(w.hachi, w.player.x, w.player.y + 1, 80, true);
   w.follow();
   await w.say('hachi', '¡Guau! (Hachi te trae algo que se le cayó al enmascarado.)', 'happy');
-  await w.clue('bufanda');
-  await w.say('ray', '¿Una bufanda del Barça? Papá es hincha del Barça... pero papá está en el trabajo.', 'surprised');
-  await w.say('ray', 'La torre... Bueno, la iglesia queda de camino. Quizá el coro sepa algo.', 'normal');
+  await w.clue('billetera');
+  await w.say('ray', '¿Una billetera marrón? No tiene ningún documento, ni un nombre... Qué misterioso.', 'surprised');
+  // Se abre un portal musical al norte de la plaza
+  audio.sfx('flash');
+  w.flash(400, [255, 220, 255]);
+  const portal = w.addObject({ id: 'portalLima', type: 'portal', x: 31, y: 0, oy: 8, talk: (ww) => ww.goto('garden', 'default', { portal: true, white: true }) });
+  portal.sprite.setScale(0.1);
+  await w.pan(32, 2, 700);
+  await fx.tween(w, { targets: portal.sprite, scale: 1, duration: 800, ease: 'Back.Out' });
+  fx.notesBurst(w, portal.sprite.x, portal.sprite.y - 20, 16);
+  await w.wait(400);
+  w.follow();
+  await w.say('ray', '¿Un portal musical? Se escucha un coro del otro lado... Vamos, Hachi.', 'surprised');
   state.setFlag('park_masked');
   w.save();
-  w.hint('Sigue el camino hacia el norte (arriba a la derecha).', 4000);
+  w.hint('Entra al portal al norte de la plaza (arriba a la derecha).', 4000);
 }

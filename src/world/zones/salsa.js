@@ -5,7 +5,7 @@ import * as fx from '../../core/fx.js';
 import { MapBuilder } from '../mapgen.js';
 
 // ============================================================================
-// Escena 4: el Salón del Sabor (versión fantástica de la academia de salsa de Lima)
+// Escena 4: la academia de salsa de Sharon
 // ============================================================================
 
 const m = new MapBuilder(30, 18, ':');
@@ -28,8 +28,8 @@ const DANCERS = [
 
 export default {
   id: 'salsa',
-  title: 'El Salón del Sabor',
-  sub: 'Lima (más o menos)',
+  title: 'Academia de Sharon',
+  sub: 'Lima',
   map: MAP,
   bg: '#1a0d26',
   legend: { '#': 'wallSalsaTop', W: 'wallSalsa', n: 'wallSalsaNeon', ':': 'woodDark', x: 'dance', y: 'dance2' },
@@ -67,6 +67,7 @@ export default {
   music: () => ({ song: 'SALSA' }),
   setup: (w) => setupLights(w),
   onEnter: (w) => intro(w),
+  objective: () => (state.hasNote('sabor') ? 'Entra al portal verde' : 'Habla con Sharon en el escenario'),
 };
 
 function setupLights(w) {
@@ -99,7 +100,7 @@ function setupLights(w) {
 }
 
 async function intro(w) {
-  fx.titleCard(w, 'El Salón del Sabor', 'Lima (más o menos)');
+  fx.titleCard(w, 'Academia de Sharon', 'Lima');
   if (state.flag('salsa_intro')) return;
   state.setFlag('salsa_intro');
   await w.wait(900);
@@ -138,7 +139,7 @@ async function sharonTalk(w) {
   }
   sh.setFrame(16);
   await w.wait(1200);
-  await w.say('sharon', '¡Eso es sabor, Ray! ¡Así se baila en el Salón del Sabor!', 'happy');
+  await w.say('sharon', '¡Eso es sabor, Ray! ¡Así se baila en mi academia!', 'happy');
   sh.face('down');
   await w.getNote('sabor');
   await maskedSalsa(w);
@@ -170,15 +171,15 @@ async function maskedSalsa(w) {
   w.tweens.add({ targets: mk.sprite, alpha: 0, duration: 250 });
   await w.wait(300);
   w.removeActor('maestro');
-  const key = w.add.image(lx * 16 + 8, ly * 16 + 8, 'llavero').setDepth(ly * 16 + 8);
+  const key = w.add.image(lx * 16 + 8, ly * 16 + 8, 'llave').setDepth(ly * 16 + 8);
   await w.say('sharon', 'Ese encapuchado baila medio tieso. Le falta clase. ¡Que se inscriba!', 'happy');
   w.emote(w.hachi, '!', 800);
   audio.sfx('bark');
   await w.runDog(w.hachi, lx, ly, 70);
   key.destroy();
   await w.runDog(w.hachi, w.player.x, w.player.y + 1, 70, true);
-  await w.clue('llavero');
-  await w.say('ray', '"Recuerdo de Lima"... El enmascarado viene de Lima. ¿Quién de Lima podría...?', 'surprised');
+  await w.clue('llave');
+  await w.say('ray', '¿Una llave? ¿De qué puerta será...? Este enmascarado va dejando cosas por todos lados.', 'surprised');
   // Aparece el portal a la Cueva del Código
   await w.wait(300);
   audio.sfx('flash');

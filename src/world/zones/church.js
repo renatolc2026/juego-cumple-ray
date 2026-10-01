@@ -2,10 +2,9 @@ import { state } from '../../core/state.js';
 import { audio } from '../../core/audio.js';
 import * as fx from '../../core/fx.js';
 import { MapBuilder } from '../mapgen.js';
-import { MUSICBOX } from '../../core/songs.js';
 
 // ============================================================================
-// Escena 3: la iglesia (jardín exterior + interior con el coro)
+// Escena 3: la Parroquia Santa Beatriz, en Lima (jardín exterior + interior con el coro)
 // ============================================================================
 
 // ---------------------------------------------------------------- Jardín
@@ -21,8 +20,8 @@ const GARDEN = g.build();
 
 export const garden = {
   id: 'garden',
-  title: 'La Iglesia',
-  sub: 'El jardín',
+  title: 'Parroquia Santa Beatriz',
+  sub: 'Lima',
   map: GARDEN,
   spawns: {
     default: { x: 14, y: 18, dir: 'up' },
@@ -33,7 +32,6 @@ export const garden = {
     { type: 'tree', x: 22, y: 8 },
     { type: 'tree', x: 2, y: 15 }, { type: 'tree', x: 25, y: 15 }, { type: 'tree', x: 6, y: 6 },
     { type: 'palm', x: 1, y: 6 }, { type: 'palm', x: 27, y: 6 },
-    { id: 'hcj', type: 'benchHCJ', x: 22, y: 11, talk: (w) => benchHCJ(w) },
     { type: 'flowers', x: 21, y: 13 }, { type: 'flowers', x: 24, y: 13 }, { type: 'flowers', x: 20, y: 10 },
     { type: 'flowers', x: 11, y: 8 }, { type: 'flowers', x: 17, y: 8 }, { type: 'flowers', x: 11, y: 15 }, { type: 'flowers', x: 17, y: 15 },
     { type: 'hedgeObj', x: 9, y: 17 }, { type: 'hedgeObj', x: 19, y: 17 },
@@ -58,17 +56,26 @@ export const garden = {
     {
       x: 14, y: 19, w: 2, h: 1,
       run: async (w) => {
-        await w.say('ray', 'El parque queda por allá. Pero el camino sigue por aquí.');
+        await w.say('ray', 'La Plaza de Armas quedó en Sullana. El portal me trajo hasta Lima.');
         await w.player.walk('U1');
       },
     },
   ],
   music: () => ({ song: state.hasNote('fe') ? 'CHOIR' : 'PARK' }),
   onEnter: (w, spawn) => gardenEnter(w, spawn),
+  objective: () => (state.hasNote('fe') ? 'Entra al portal del jardín' : 'Entra a la parroquia'),
 };
 
 async function gardenEnter(w, spawn) {
-  if (spawn === 'default') fx.titleCard(w, 'La Iglesia', 'Sullana');
+  if (spawn === 'default') {
+    fx.titleCard(w, 'Parroquia Santa Beatriz', 'Lima');
+    if (!state.flag('garden_intro')) {
+      state.setFlag('garden_intro');
+      await w.wait(900);
+      await w.say('ray', '¿Lima? ¡Es la Parroquia Santa Beatriz! El portal de la plaza me trajo hasta aquí.', 'surprised');
+      await w.say(null, 'Desde adentro no se escucha ni un canto. Algo le pasa al coro.');
+    }
+  }
   if (state.hasNote('fe') && !state.flag('portal_salsa')) {
     await w.wait(600);
     // Aparece el portal musical
@@ -82,87 +89,16 @@ async function gardenEnter(w, spawn) {
     fx.notesBurst(w, p.sprite.x, p.sprite.y - 20, 18);
     audio.sfx('chime');
     await w.wait(500);
-    await w.say('ray', '¿Un portal? Suena a... ¿salsa? ¡Esa es la academia de Sharon!', 'surprised');
+    await w.say('ray', 'Otro portal... Se siente tranquilo, como un abrazo.', 'surprised');
     w.follow();
-    if (!state.flag('bench_done')) {
-      await w.wait(200);
-      w.emote(w.hachi, '!', 900);
-      await w.say(null, 'Hachi mira hacia la banca del jardín, junto al algarrobo.');
-    }
+    w.emote(w.hachi, '!', 900);
+    audio.sfx('bark1');
     w.save();
   }
 }
 
 async function enterPortal(w) {
-  if (!state.flag('bench_done')) {
-    audio.sfx('bark');
-    await w.say(null, 'Hachi se sienta y jala hacia la banca del jardín. Parece que quiere que descanses un ratito antes de irte.');
-    await w.player.walk('R1');
-    return;
-  }
-  await w.goto('salsa', 'default', { portal: true, white: true });
-}
-
-// Momento del abuelito Humberto: banca con placa "HCJ"
-async function benchHCJ(w) {
-  if (state.flag('bench_done')) {
-    await w.say(null, 'La banca con la placa "HCJ". Todavía se siente calientita.');
-    return;
-  }
-  const r = await w.ask(null, 'Una banca de madera con una placa discreta que dice "HCJ". ¿Te sientas un ratito?', ['Sí', 'Ahora no']);
-  if (r !== 0) return;
-  const p = w.player;
-  // Ray se sienta en la banca
-  const bench = w.obj('hcj');
-  audio.stopSong(1.5);
-  audio.setAmbience(false);
-  await w.wait(300);
-  p.sprite.setPosition(bench.sprite.x - 6, bench.sprite.y - 3);
-  p.face('down');
-  p.sync();
-  p.sprite.setDepth(bench.sprite.depth + 1);
-  if (w.hachi) {
-    w.hachi.sprite.setPosition(bench.sprite.x + 9, bench.sprite.y - 1);
-    w.hachi.setFrame(16);
-    w.hachi.sprite.setDepth(bench.sprite.depth + 2);
-  }
-  await w.wait(900);
-  audio.setClarity(1, 2);
-  audio.playSong(MUSICBOX, { fadeIn: 2 });
-  const light = w.add.image(bench.sprite.x, bench.sprite.y - 12, 'light').setBlendMode('ADD').setDepth(8000).setAlpha(0).setScale(1.8);
-  w.tweens.add({ targets: light, alpha: 0.42, duration: 2500 });
-  w.tweens.add({ targets: light, scale: 2.1, duration: 1800, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
-  const motes = w.add.particles(bench.sprite.x, bench.sprite.y, 'sparkle', {
-    x: { min: -40, max: 40 },
-    speedY: { min: -8, max: -20 },
-    lifespan: 3000,
-    frequency: 180,
-    alpha: { start: 0.9, end: 0 },
-    scale: { start: 0.6, end: 0.2 },
-    tint: [0xffe9a0, 0xffffff, 0xffd166],
-  }).setDepth(8001);
-  const prevSat = w.grade?.state.sat ?? 1;
-  w.setSat(1, 2500);
-  await w.wait(2800);
-  await w.say(null, 'Una brisa cálida te rodea. Sientes que alguien te acompaña y está orgulloso de ti.', 'normal', { speed: 45 });
-  await w.wait(600);
-  await w.give('bendicion', 1, 'Recupera todo el ánimo en la batalla final');
-  state.setFlag('bench_done');
-  await w.wait(800);
-  motes.stop();
-  w.tweens.add({ targets: light, alpha: 0, duration: 1500, onComplete: () => light.destroy() });
-  w.setSat(prevSat, 1500);
-  await w.wait(1200);
-  motes.destroy();
-  // Se levanta
-  p.place(p.x, p.y);
-  if (w.hachi) {
-    w.hachi.place(w.hachi.x, w.hachi.y);
-    w.hachi.face(p.dir);
-  }
-  w.startZoneMusic();
-  audio.setAmbience(true);
-  w.save();
+  await w.goto('recuerdos', 'default', { portal: true, white: true });
 }
 
 // ---------------------------------------------------------------- Interior
@@ -181,7 +117,7 @@ const CHOIR_IDS = ['juanmi', 'anita', 'mariana', 'nicol', 'angela', 'mimi'];
 
 export const church = {
   id: 'church',
-  title: 'La Iglesia',
+  title: 'Parroquia Santa Beatriz',
   sub: 'El coro',
   map: CHURCH,
   legend: { W: 'wallChurch', w: 'wallChurchWin', '#': 'wallChurchTop', '.': 'stone', r: 'carpet' },
@@ -223,8 +159,13 @@ export const church = {
     },
   ],
   music: () => ({ song: 'CHOIR' }),
+  objective: () => {
+    if (!state.flag('choir_asked')) return 'Habla con el coro';
+    if (!state.hasNote('fe')) return 'Toca el órgano (a la izquierda)';
+    return 'Sal de la parroquia';
+  },
   onEnter: (w) => {
-    fx.titleCard(w, 'La Iglesia', 'El coro');
+    fx.titleCard(w, 'Parroquia Santa Beatriz', 'El coro');
     return null;
   },
 };
@@ -237,7 +178,7 @@ async function choirTalk(w, id) {
       mariana: '¡Feliz cumpleaños! Te lo cantamos completito cuando todo vuelva a la normalidad.',
       nicol: 'Dios te bendiga, Ray. Ve con cuidado a esa torre.',
       angela: 'El coro ya afinó. Solo falta que el resto del mundo también afine.',
-      mimi: 'Antes de irte, pasa por el jardín. La banca junto al algarrobo siempre está calentita.',
+      mimi: 'Afuera, en el jardín, apareció un portal. Se siente como un abrazo.',
     };
     await w.say(id, lines[id], 'happy');
     return;
@@ -256,7 +197,7 @@ async function choirScene(w) {
   await w.say('juanmi', '¡Ray! Qué bueno que viniste. Tenemos un problemón: no podemos cantar.', 'sad');
   await w.say('anita', 'Abrimos la boca y... nada. Ni un "la".', 'sad');
   await w.say('mariana', '¡Y justo hoy! Te habíamos preparado una canción por tu cumpleaños.', 'sad');
-  await w.say('nicol', 'Nicol dice que es culpa del enmascarado que pasó hace rato...', 'surprised');
+  await w.say('nicol', '¡Yo creo que es culpa del enmascarado que pasó hace rato!', 'surprised');
   // Aparece el enmascarado detrás del órgano
   audio.sfx('whoosh');
   const mk = w.spawn({ id: 'maestro', char: 'maestro', x: 4, y: 6, dir: 'right', ghost: true });
@@ -313,6 +254,6 @@ async function organTalk(w) {
   await w.wait(800);
   await w.getNote('fe');
   await w.say('anita', 'Una Nota Legendaria... ¡la Nota de la Fe! Llévala contigo, Ray.', 'happy');
-  await w.say('mimi', 'Antes de irte, pasa por el jardín. La banca junto al algarrobo siempre está calentita.', 'happy');
+  await w.say('mimi', 'Cuando salgas, mira el jardín. Algo bonito te espera.', 'happy');
   w.save();
 }

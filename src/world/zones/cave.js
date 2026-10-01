@@ -48,9 +48,9 @@ export default {
   actors: () => {
     const list = DEVS.map((d) => ({ ...d, char: d.id, idle: 'look', talk: (w) => devTalk(w, d.id) }));
     if (state.flag('friends_joined')) {
-      list.push({ id: 'cesar', char: 'cesar', x: 12, y: 12, dir: 'up', idle: 'look', talk: (w) => w.say('cesar', '¡Dale, Ray! Nosotros te esperamos con todo listo.', 'happy') });
-      list.push({ id: 'elbers', char: 'elbers', x: 17, y: 12, dir: 'up', idle: 'look', talk: (w) => w.say('elbers', 'Si ves al enmascarado, dile que nadie le gana a este grupo.', 'happy') });
-      list.push({ id: 'martin', char: 'martin', x: 15, y: 13, dir: 'up', idle: 'look', talk: (w) => w.say('martin', 'Ve nomás, causa. Hachi te cuida.', 'happy') });
+      list.push({ id: 'cesar', char: 'cesar', x: 12, y: 12, dir: 'up', idle: 'look', talk: (w) => w.say('cesar', '¡Feliz cumpleaños, Ray!', 'happy') });
+      list.push({ id: 'elbers', char: 'elbers', x: 17, y: 12, dir: 'up', idle: 'look', talk: (w) => w.say('elbers', 'Me escapé de Carol. No aguanto a mi suegra.', 'normal') });
+      list.push({ id: 'martin', char: 'martin', x: 15, y: 13, dir: 'up', idle: 'look', talk: (w) => w.say('martin', '¡Feliz cumpleaños, Ray!', 'happy') });
     }
     return list;
   },
@@ -63,6 +63,11 @@ export default {
   ],
   music: () => ({ song: 'CODE' }),
   onEnter: (w) => intro(w),
+  objective: () => {
+    if (!state.flag('cave_asked')) return 'Habla con los programadores';
+    if (!state.flag('cave_fixed')) return 'Arregla el portal congelado';
+    return 'Entra al portal';
+  },
   update: (w, time) => {
     const bug = w.obj('bug');
     if (bug) bug.sprite.x = (16 * 16 + 8) + Math.sin(time / 300) * 3;
@@ -110,7 +115,7 @@ async function caveScene(w) {
   DEVS.forEach((d) => w.emote(d.id, '!', 900));
   w.emote(w.player, '!', 900);
   await w.wait(500);
-  await w.say('maestro', 'Ese bug lo programé yo mismo.');
+  await w.say('maestro', 'Ese bug lo programé yo mismo con IA.');
   await w.wait(300);
   await w.say('maestro', 'Bueno... en realidad me salió sin querer.');
   await w.say('ricardo', '¿Sin querer? Clásico.', 'normal');
@@ -178,9 +183,9 @@ async function friendsArrive(w) {
   await w.pan(14, 14, 600);
   await Promise.all([cesar.walk('U5', 180), elbers.walk('U5', 180), martin.walk('U4', 180)]);
   w.player.face('down');
-  await w.say('cesar', '¡Ray! ¡Te encontramos! ¡Feliz cumpleaños, causa!', 'happy');
-  await w.say('elbers', 'Nos enteramos de que andabas recuperando la música. ¿Y creías que te íbamos a dejar solo?', 'happy');
-  await w.say('martin', 'Los de siempre, pues. Donde va Ray, vamos nosotros.', 'happy');
+  await w.say('cesar', '¡Feliz cumpleaños, Ray!', 'happy');
+  await w.say('elbers', 'Me escapé de Carol. No aguanto a mi suegra.', 'normal');
+  await w.say('martin', '¡Feliz cumpleaños, Ray!', 'happy');
   await w.say('ray', 'Gracias, muchachos. De verdad.', 'happy');
   fx.hearts(w, w.player.sprite.x, w.player.sprite.y - 20, 8);
   state.setFlag('friends_joined');

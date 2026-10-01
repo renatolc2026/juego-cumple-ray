@@ -56,7 +56,7 @@ export const CHARS = {
   },
   juanmi: {
     name: 'Juanmi', voice: 400,
-    hair: '#2a1d17', style: 'curly',
+    hair: '#2a1d17', style: 'curly', glasses: '#2a2a33',
     top: ROBE, collar: ROBE_COLLAR, sleeves: 'long', robe: true, bottom: ROBE, shoes: '#2d1f1a',
   },
   anita: {
@@ -101,8 +101,8 @@ export const CHARS = {
     top: '#5a3d8a', collar: '#7b5bb0', sleeves: 'long', bottom: JEAN, shoes: '#2b2b33',
   },
   dev2: {
-    name: 'Programadora', voice: 700,
-    hair: '#2a1c14', style: 'ponytail', glasses: '#2a2a33', blush: true,
+    name: 'Nico', voice: 420,
+    hair: '#2a1c14', style: 'short', glasses: '#2a2a33',
     top: '#2f8f9a', collar: '#58b8c2', sleeves: 'long', bottom: '#3a3a4a', shoes: '#2b2b33',
   },
   dev3: {
@@ -112,7 +112,7 @@ export const CHARS = {
   },
   cesar: {
     name: 'César', voice: 380,
-    hair: PAL.hairBlack, style: 'spiky',
+    hair: PAL.hairBlack, style: 'spiky', glasses: '#2a2a33',
     top: '#e0873a', collar: '#f2a861', sleeves: 'short', bottom: JEAN, shoes: '#f0f0f0',
   },
   elbers: {
@@ -148,12 +148,12 @@ export const CHARS = {
     top: '#3fb5e8', collar: '#8fd3ff', sleeves: 'none', dress: true, bottom: '#3fb5e8', shoes: '#f4c04a', sparkle: '#ffffff',
   },
   vecina: {
-    name: 'Tía Charo', voice: 600,
+    name: 'Ivaana', voice: 600,
     hair: '#3a2a22', style: 'bun', blush: true,
     top: '#f28c8c', collar: '#ffb0b0', sleeves: 'short', dress: true, bottom: '#f28c8c', shoes: '#8a4a4a',
   },
   nino: {
-    name: 'Niño', voice: 820,
+    name: 'Eduardo', voice: 820,
     hair: PAL.hairBlack, style: 'spiky', short: 3,
     top: '#56b4e9', collar: '#8fd3ff', sleeves: 'short', bottom: '#e8a33b', shoes: '#e84a4a',
   },

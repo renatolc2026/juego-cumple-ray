@@ -51,13 +51,13 @@ export default {
     { type: 'nightstand', x: 2, y: 2 },
     { type: 'desk', x: 5, y: 2, talk: (w) => w.say('ray', 'Mi laptop. Hoy nada de trabajo... bueno, casi nada.') },
     { type: 'bookshelf', x: 8, y: 2 },
-    { type: 'barcaPoster', x: 7, y: 1, talk: (w) => w.say('ray', 'Visca el Barça. Papá me pegó la costumbre.') },
+    { type: 'barcaPoster', x: 7, y: 1, talk: (w) => w.say('ray', 'Un póster del Barça. El fútbol es el pasatiempo de papá.') },
     { type: 'rugSmall', x: 3, y: 5 },
     { type: 'plant', x: 1, y: 7 },
     // Sala
     { id: 'piano', type: 'piano', x: 10, y: 2, talk: (w) => pianoTalk(w) },
     { type: 'familyPhoto', x: 13, y: 1, talk: (w) => w.say('ray', 'La foto familiar. Tato sale con los ojos cerrados, como siempre.') },
-    { type: 'tv', x: 16, y: 2, talk: (w) => w.say(null, 'La tele está apagada. Papá la prende en la tarde para ver al Barça.') },
+    { type: 'tv', x: 16, y: 2, talk: (w) => w.say(null, 'La tele está apagada. En la tarde papá la prende para ver al Barça: es su pasatiempo favorito.') },
     { type: 'clock', x: 19, y: 1 },
     { type: 'crossWall', x: 20, y: 1 },
     { type: 'plant', x: 21, y: 2 },
@@ -154,6 +154,16 @@ export default {
   },
 
   update: (w, time) => shiroAI(w, time),
+
+  objective: () => {
+    if (!state.flag('home_morning') || !state.flag('home_intro_done')) return null;
+    if (!state.flag('piano_tried')) return 'Prueba el piano de la sala';
+    if (!state.flag('shiro_caught')) return 'Atrapa a Shiro';
+    if (!state.flag('got_tallarines')) return 'Habla con mamá en la cocina';
+    if (!state.flag('got_mapa')) return 'Revisa la mesa de la cocina';
+    if (!state.flag('letter_read')) return 'Lee la carta de la entrada';
+    return 'Sal por la puerta de abajo';
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -225,7 +235,7 @@ async function intro5am(w) {
   papa.face('left');
   await w.say('papa', 'Hace un ratito cantábamos lo más bien...', 'surprised');
   await w.say('ray', '¿Ma? ¿Pa? ¿Qué pasó con la canción?', 'surprised');
-  await w.say('papa', 'No sé, hijo... Bueno, feliz cumpleaños igual. Hoy me voy temprano al trabajo, pero en la tarde vemos juntos al Barça.', 'normal');
+  await w.say('papa', 'No sé, hijo... Bueno, feliz cumpleaños igual. Hoy me voy temprano al trabajo. En la tarde llego a ver el partido del Barça.', 'normal');
   await w.say(null, 'En ese mismo instante, en toda Sullana... la música desapareció.');
   await w.fadeOut(900);
   dark.destroy();
@@ -470,7 +480,7 @@ async function readLetter(w) {
   state.setFlag('letter_read');
   w.removeObject('letter');
   audio.sfx('item');
-  await w.say(null, '"Querido Ray: la música de Sullana ahora es mía. Si la quieres de vuelta, reúne las cuatro Notas Legendarias y sube a la Torre del Silencio."');
+  await w.say(null, '"Ray: la música de Sullana ahora es mía. Si la quieres de vuelta, reúne las cuatro Notas Legendarias y sube a la Torre del Silencio."');
   await w.say(null, '"Atentamente: el Maestro del Silencio."');
   await w.say('ray', '¿El Maestro del Silencio? Nunca había escuchado ese nombre.', 'surprised');
   await w.say('ray', 'Bueno. Si hay que buscar notas, las buscamos. ¿Vamos, Hachi?', 'happy');

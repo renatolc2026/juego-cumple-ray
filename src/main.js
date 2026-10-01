@@ -63,11 +63,17 @@ async function start() {
   window.addEventListener('keydown', unlock);
   window.addEventListener('touchend', unlock);
 
+  // Recentrar el juego al girar el celular o cambiar el tamaño de la ventana
+  const refresh = () => setTimeout(() => game.scale.refresh(), 250);
+  window.addEventListener('orientationchange', refresh);
+  window.addEventListener('resize', refresh);
+  window.visualViewport?.addEventListener('resize', refresh);
+
   // Pausar música si se oculta la pestaña
   document.addEventListener('visibilitychange', () => {
     if (!audio.ctx) return;
     if (document.hidden) audio.ctx.suspend();
-    else audio.ctx.resume();
+    else audio.unlock();
   });
   window.__game = game;
 }

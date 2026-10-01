@@ -5,5 +5,6 @@ import salsa from './salsa.js';
 import cave from './cave.js';
 import tower from './tower.js';
 import party from './party.js';
+import recuerdos from './recuerdos.js';
 
-export const ZONES = { home, park, garden, church, salsa, cave, tower, party };
+export const ZONES = { home, park, garden, church, salsa, cave, tower, party, recuerdos };
