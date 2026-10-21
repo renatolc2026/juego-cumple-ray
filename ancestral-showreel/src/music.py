@@ -330,7 +330,7 @@ for k in range(16):
 
 # zoom dentro del hilo (2.2 s) y giro hacia el teñido (7.2 s)
 place(whoosh(0.6, 200, 5000, 0.9), 2.08, rev=0.4)
-place(whoosh(0.55, 300, 7000, 0.8), 7.12, pan=-0.2, rev=0.4)
+place(whoosh(1.0, 250, 6000, 0.7), 7.1, pan=-0.2, rev=0.45)   # giro de 90° (7,0-8,2 s)
 
 # ---- hilado: arpegio de charango en semicorcheas que "gira"
 for i in range(16):
@@ -353,7 +353,7 @@ for i, m in enumerate([67, 71, 74, 79, 74, 71]):
     place(charango_note(m, 0.9, 0.4, 0.5), bt(14 + i * 0.333), pan=0.3, rev=0.35)
 
 # latigazo del hilo hacia arriba (9.8 s)
-place(whoosh(0.4, 500, 9000, 1.0), 9.74, pan=0.1, rev=0.3)
+place(whoosh(0.55, 500, 9000, 0.9), 9.72, pan=0.1, rev=0.3)
 
 # ---- urdimbre: glissando de charango sincronizado con cada hilo que cae
 PENTA = [57, 60, 62, 64, 67, 69, 72, 74, 76, 79, 81, 84, 86, 88, 91]
@@ -407,12 +407,15 @@ place(whoosh(1.0, 150, 9000, 1.1), 16.55, rev=0.5)
 place(boom(3.0, 1.0), bt(28), rev=0.4)
 place(bombo(1.2, 100, 42, 0.8), bt(28), rev=0.3)
 strum('Am', bt(28), True, 0.9, 0.035, 2.6, pan=0.15)
-for i, m in enumerate([88, 93, 91, 96, 86]):
-    place(bell(midi(m), 2.2, 0.55), 17.42 + i * 0.04 + 0.05, pan=[-0.1, 0.1, -0.4, 0.4, 0.2][i], rev=0.75)
+# cada estrella que se enciende: la Cruz del Sur (izquierda) y las Pléyades (derecha)
+for i, m in enumerate([88, 93, 91, 96, 86, 84, 89]):
+    place(bell(midi(m), 2.2, 0.5), 17.45 + i * 0.07, pan=-0.75 + 0.05 * i, rev=0.75)
+for i, m in enumerate([96, 100, 98, 103, 101, 105]):
+    place(bell(midi(m), 1.6, 0.22), 17.85 + i * 0.07, pan=0.6 + 0.04 * i, rev=0.8)
 # la Chakana se dibuja: brillo suave
 shimmer(17.8, [81, 86, 88, 93], 0.22, 0.3, -0.3, 0.3)
 # NOW IN UTAH
-place(bell(midi(81), 2.5, 0.7), 18.95, rev=0.8)
+place(bell(midi(81), 2.5, 0.7), 19.0, rev=0.8)
 place(bell(midi(88), 2.0, 0.35), 19.0, pan=0.3, rev=0.8)
 
 # ------------------------------------------------------------------ reverb

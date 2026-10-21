@@ -24,11 +24,9 @@ const lerp = (a, b, t) => a + (b - a) * t;
 const prog = (t, a, b) => clamp((t - a) / (b - a));
 const smooth = t => t * t * (3 - 2 * t);
 const ei2 = t => t * t;
-const ei3 = t => t * t * t;
 const eo3 = t => 1 - Math.pow(1 - t, 3);
 const eio = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const eoExpo = t => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
-const eioExpo = t => (t <= 0 ? 0 : t >= 1 ? 1 : t < 0.5 ? Math.pow(2, 20 * t - 10) / 2 : (2 - Math.pow(2, -20 * t + 10)) / 2);
 const eoBack = (t, s = 1.4) => 1 + (s + 1) * Math.pow(t - 1, 3) + s * Math.pow(t - 1, 2);
 const TAU = Math.PI * 2;
 
@@ -96,15 +94,6 @@ function smoothPath(ctx, pts) {
   ctx.lineTo(pts[(n - 1) * 2], pts[(n - 1) * 2 + 1]);
 }
 
-function glowDot(ctx, x, y, r, col, a) {
-  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-  g.addColorStop(0, rgba(col, a));
-  g.addColorStop(0.25, rgba(col, a * 0.35));
-  g.addColorStop(1, rgba(col, 0));
-  ctx.fillStyle = g;
-  ctx.fillRect(x - r, y - r, r * 2, r * 2);
-}
-
 // ---------------------------------------------------------------- tipografía
 function setFont(ctx, size, { it = false, w = 400, fam = 'Cormorant', ls = 0 } = {}) {
   ctx.font = `${it ? 'italic ' : ''}${w} ${size}px ${fam}`;
@@ -112,9 +101,10 @@ function setFont(ctx, size, { it = false, w = 400, fam = 'Cormorant', ls = 0 } =
 }
 
 // Revela palabra por palabra: entra con desenfoque y sube; sale con desenfoque.
-// ws = [[texto, cursiva], ...]
+// ws = [[texto, cursiva], ...]. La palabra mágica (cursiva) va en Oro Inca sobre
+// fondo oscuro, como en la jerarquía tipográfica del manual (3.2).
 function words(ctx, ws, x, y, o) {
-  const { size = 60, align = 'left', color = CRUDO, alpha = 1, tIn, tOut, t, stagger = 0.07, dur = 0.6, w = 400, rise = 18, blur = 10 } = o;
+  const { size = 60, align = 'left', color = CRUDO, itColor = GOLD, alpha = 1, tIn, tOut, t, stagger = 0.07, dur = 0.6, w = 400, rise = 18, blur = 10 } = o;
   setFont(ctx, size, { w });
   const sp = ctx.measureText(' ').width;
   const widths = ws.map(([s, it]) => { setFont(ctx, size, { it, w }); return ctx.measureText(s).width; });
@@ -131,7 +121,7 @@ function words(ctx, ws, x, y, o) {
       const b = (1 - pi) * blur + po * blur;
       ctx.save();
       ctx.filter = b > 0.3 ? `blur(${b.toFixed(2)}px)` : 'none';
-      ctx.fillStyle = rgba(color, a);
+      ctx.fillStyle = rgba(it ? itColor : color, a);
       ctx.fillText(s, cx, y + (1 - pi) * rise - po * rise * 0.6);
       ctx.restore();
     }
@@ -141,10 +131,10 @@ function words(ctx, ws, x, y, o) {
 
 // ---------------------------------------------------------------- fondo
 function background(ctx, t) {
-  const k = kf(t, [[0, 0.05], [1.4, 0.55], [2.6, 0.42], [5, 0.34], [7.5, 0.3], [10, 0.22], [15.3, 0.3], [16.6, 0.85], [17.7, 0.6], [20, 0.62]]);
+  // "Cielo andino" del manual (3.4): lineal vertical, Noche arriba y Violeta abajo.
+  const k = kf(t, [[0, 0.15], [1.6, 0.9], [2.6, 0.8], [5, 0.75], [10, 0.68], [15.3, 0.75], [16.6, 1], [20, 1]]);
   const g = ctx.createLinearGradient(0, 0, 0, H);
   g.addColorStop(0, rgba(NIGHT));
-  g.addColorStop(0.55, rgba(mixc(NIGHT, VIOLET, k * 0.3)));
   g.addColorStop(1, rgba(mixc(NIGHT, VIOLET, k)));
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, W, H);
@@ -153,20 +143,20 @@ function background(ctx, t) {
 const STARS = (() => {
   const r = mulberry32(7), a = [];
   for (let i = 0; i < 360; i++) {
-    a.push({ x: r() * W, y: r() * H * 0.92, s: 0.35 + Math.pow(r(), 4) * 2.1, ph: r() * TAU, f: 0.6 + r() * 2.4, gold: r() < 0.18, d: 0.2 + r() * 0.8 });
+    a.push({ x: r() * W, y: r() * H * 0.92, s: 0.35 + Math.pow(r(), 4) * 2.1, ph: r() * TAU, f: 0.6 + r() * 2.4, d: 0.2 + r() * 0.8 });
   }
   return a;
 })();
 
 function stars(ctx, t) {
-  const A = kf(t, [[0, 0], [0.9, 0.9], [2.4, 0.9], [3.0, 0.4], [7.4, 0.32], [8, 0.22], [10.2, 0.12], [15.3, 0.12], [16.3, 1], [20, 1]]);
+  const A = kf(t, [[0, 0], [0.9, 0.8], [2.4, 0.8], [3.0, 0.4], [7.4, 0.32], [8, 0.22], [10.2, 0.12], [15.3, 0.12], [16.3, 0.85], [20, 0.85]]);
   if (A < 0.01) return;
   const drift = t * 7;
   for (const s of STARS) {
     let x = (s.x - drift * s.d) % W;
     if (x < 0) x += W;
     const tw = 0.55 + 0.45 * Math.sin(t * s.f + s.ph);
-    ctx.fillStyle = rgba(s.gold ? GOLD : CRUDO, A * tw * (0.25 + 0.75 * Math.min(1, s.s / 1.6)));
+    ctx.fillStyle = rgba(CRUDO, A * tw * (0.25 + 0.75 * Math.min(1, s.s / 1.6)));
     ctx.beginPath();
     ctx.arc(x, s.y, s.s, 0, TAU);
     ctx.fill();
@@ -186,14 +176,7 @@ function sIntro(ctx, t) {
 
   const tip = lerp(-40, 1980, eio(prog(t, 0.15, 2.05)));
   if (tip > -40) {
-    // halo
     ctx.lineCap = 'round';
-    ctx.strokeStyle = rgba(GOLD, 0.10);
-    ctx.lineWidth = 9;
-    ctx.beginPath();
-    for (let x = -40; x <= tip; x += 8) x === -40 ? ctx.moveTo(x, introY(x)) : ctx.lineTo(x, introY(x));
-    ctx.lineTo(tip, introY(tip));
-    ctx.stroke();
     // dos cabos torcidos
     for (let k = 0; k < 2; k++) {
       ctx.strokeStyle = rgba(k ? GOLD : mixc(GOLD, CRUDO, 0.35), 0.95);
@@ -205,14 +188,16 @@ function sIntro(ctx, t) {
       }
       ctx.stroke();
     }
-    // chispa en la punta
+    // la punta del hilo: un punto de Crudo, sin resplandor
     const sa = 1 - smooth(prog(t, 1.95, 2.3));
     if (sa > 0) {
-      glowDot(ctx, tip, introY(tip), 70, GOLD, 0.55 * sa);
-      glowDot(ctx, tip, introY(tip), 14, CRUDO, 0.9 * sa);
+      ctx.fillStyle = rgba(CRUDO, sa);
+      ctx.beginPath();
+      ctx.arc(tip, introY(tip), 2.6, 0, TAU);
+      ctx.fill();
     }
   }
-  words(ctx, [['Some', 0], ['threads', 0], ['carry', 0], ['centuries.', 1]], 960, 470, {
+  words(ctx, [['Some', 0], ['threads', 0], ['carry', 1], ['centuries.', 1]], 960, 470, {
     size: 72, align: 'center', tIn: 0.55, tOut: 2.2, t, stagger: 0.13, dur: 0.75, rise: 22, blur: 12,
   });
 }
@@ -240,6 +225,12 @@ const FIBERS = (() => {
 })();
 
 function spindleSway(t) { return 5 * Math.sin(t * 1.7); }
+
+// Giro del hilado al teñido: ambas escenas comparten el ángulo visible del hilo
+// (90° = vertical en el huso, 0° = horizontal en el teñido) y la escala, así el
+// fundido entre ellas coincide cuadro a cuadro.
+function turnAngle(t) { return (Math.PI / 2) * (1 - eio(prog(t, 7.0, 8.2))); }
+function turnScale(t) { return 1 + 0.5 * Math.sin(Math.PI * eio(prog(t, 7.0, 8.2))); }
 
 function yarnX(y, t, phase = 0, r = 3) {
   const k = clamp((y - DRAFT[1]) / (COP_TOP - DRAFT[1]));
@@ -369,15 +360,13 @@ function spindle(ctx, t) {
 const _pts = new Float32Array(28);
 function sFiber(ctx, t) {
   const zIn = lerp(1.9, 1, eoExpo(prog(t, 2.36, 3.3)));
-  const rp = ei3(prog(t, 7.18, 7.62));
+  const ts = turnScale(t);
   ctx.translate(960, 540);
-  ctx.rotate(-Math.PI / 4 * rp);
-  ctx.scale(zIn * (1 + 0.55 * rp), zIn * (1 + 0.55 * rp));
+  ctx.rotate(turnAngle(t) - Math.PI / 2);
+  ctx.scale(zIn * ts, zIn * ts);
   ctx.translate(-960, -540);
 
-  // resplandor en el punto de torsión
   const ya = smooth(prog(t, 4.75, 5.35));
-  if (ya > 0) glowDot(ctx, DRAFT[0], DRAFT[1], 150, CRUDO, 0.12 * ya);
 
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -440,24 +429,16 @@ function dyeWave(x, tau) {
 }
 
 function sDye(ctx, t) {
-  const st = prog(t, 7.42, 8.15);
-  const rot = (Math.PI / 4) * (1 - eoExpo(st));
-  const sc = lerp(1.55, 1, eoExpo(st)) * (1 + 0.035 * prog(t, 8.1, 10));
+  const sc = turnScale(t) * (1 + 0.035 * prog(t, 8.2, 10));
   ctx.translate(960, 540);
-  ctx.rotate(rot);
+  ctx.rotate(turnAngle(t));
   ctx.scale(sc, sc);
   ctx.translate(-960, -540);
 
   const tau = t - T_DROP;
-  const whip = ei3(prog(t, 9.8, 10.12));
+  const whip = eio(prog(t, 9.7, 10.25));
   const yOff = x => -980 * whip * (1 - 0.25 * Math.pow((x - 960) / 1100, 2));
   const yT = x => 540 + dyeWave(x, tau) + yOff(x);
-
-  // brillo de la cochinilla detrás del impacto (sutil, es el único acento rojo)
-  if (tau > 0) {
-    const ga = (0.20 * Math.exp(-1.6 * tau) + 0.07) * (1 - whip);
-    glowDot(ctx, 960, 540, 520, COCH, ga);
-  }
 
   // frente de tinte
   const F = tau > 0 ? 1450 * (1 - Math.exp(-1.15 * tau)) : 0;
@@ -566,7 +547,8 @@ const IDX = [VIOLET, CRUDO, GOLD, COCH, NIGHT];
 function tri(c, p = 10) { const m = ((c % p) + p) % p; return Math.abs(m - p / 2); }
 
 // Diseño del textil (fila 0 = abajo). Franjas, río (mayu), montañas (apus)
-// y en el centro un rombo escalonado con la Chakana en cochinilla.
+// y en el centro un rombo escalonado en cochinilla. La Chakana no se usa como
+// motivo: es el sello de la casa y aparece una sola vez, en el cierre.
 function cellColor(r, c) {
   const V = 0, K = 1, G = 2, R = 3, N = 4;
   if (c === 0 || c === NC - 1) return N;
@@ -580,9 +562,7 @@ function cellColor(r, c) {
   // campo central
   if (c === 1 || c === NC - 2) return G;
   const dx = Math.abs(c - 23.5), dy = Math.abs(r - 25.5), d = dx + dy;
-  if ((dx <= 5.5 && dy <= 1.5) || (dx <= 1.5 && dy <= 5.5) || (dx <= 3.5 && dy <= 3.5)) {
-    return dx <= 0.5 && dy <= 0.5 ? K : R;
-  }
+  if (d <= 6) return d <= 1 ? K : R;
   if (d === 11) return K;
   if (d === 9) return G;
   for (const sx of [6.5, 40.5]) {
@@ -697,7 +677,10 @@ function sLoom(ctx, t) {
     } else {
       ctx.beginPath(); ctx.moveTo(x, WARP_TOP); ctx.lineTo(x, yEnd); ctx.stroke();
     }
-    if (p < 1) glowDot(ctx, x, yEnd, 16, GOLD, 0.8 * (1 - p));
+    if (p < 1) {
+      ctx.fillStyle = rgba(GOLD, 1 - p);
+      ctx.beginPath(); ctx.arc(x, yEnd, 2.2, 0, TAU); ctx.fill();
+    }
   }
 
   // vara de lizos: levanta los hilos alternos a cada corchea
@@ -724,13 +707,11 @@ function sLoom(ctx, t) {
       const dir = k % 2 === 0 ? 1 : -1;
       const shx = dir > 0 ? lerp(X0 - 40, X1 + 40, fr) : lerp(X1 + 40, X0 - 40, fr);
       const ry = YB - (k + 1) * RH;
-      const cA = clamp(Math.floor((shx - X0) / CW));
       // celdas reveladas de la fila en curso
       let c0, c1;
       if (dir > 0) { c0 = 0; c1 = clamp(Math.floor((shx - X0) / CW + 0.5), 0, NC); }
       else { c0 = clamp(Math.ceil((shx - X0) / CW - 0.5), 0, NC); c1 = NC; }
       if (c1 > c0) ctx.drawImage(TEX, c0 * sTex, (NR - 1 - k) * sTex, (c1 - c0) * sTex, sTex, X0 + c0 * CW, ry, (c1 - c0) * CW, RH);
-      void cA;
       // trama que se tiende y lanzadera
       const sa = 1 - smooth(prog(rate, 5, 13));
       if (sa > 0.01) {
@@ -738,14 +719,6 @@ function sLoom(ctx, t) {
         ctx.strokeStyle = rgba(CRUDO, 0.85 * sa);
         ctx.lineWidth = 1.4;
         ctx.beginPath(); ctx.moveTo(dir > 0 ? X0 - 40 : X1 + 40, yy); ctx.lineTo(shx, yy); ctx.stroke();
-        const trail = Math.min(300, rate * 720 * 0.05 + 40);
-        const g = ctx.createLinearGradient(shx - dir * trail, 0, shx, 0);
-        g.addColorStop(0, rgba(GOLD, 0));
-        g.addColorStop(1, rgba(GOLD, 0.6 * sa));
-        ctx.strokeStyle = g;
-        ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.moveTo(shx - dir * trail, yy); ctx.lineTo(shx, yy); ctx.stroke();
-        glowDot(ctx, shx, yy, 40, GOLD, 0.5 * sa);
         ctx.fillStyle = rgba(GOLD, sa);
         ctx.beginPath(); ctx.ellipse(shx, yy, 22, 3.6, 0, 0, TAU); ctx.fill();
         ctx.fillStyle = rgba(CRUDO, sa);
@@ -758,306 +731,256 @@ function sLoom(ctx, t) {
       ctx.strokeStyle = rgba(GOLD, 0.9 * (1 - smooth(prog(t, 15.15, 15.5))));
       ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(X0 - 20, by); ctx.lineTo(X1 + 20, by); ctx.stroke();
-      glowDot(ctx, 960, by, 60, GOLD, 0.25 * (1 - smooth(prog(t, 15.15, 15.5))));
-    }
-    // destello al terminar
-    const sw = prog(t, 15.05, 15.75);
-    if (sw > 0 && sw < 1) {
-      ctx.save();
-      ctx.beginPath(); ctx.rect(X0, YT, NC * CW, NR * RH); ctx.clip();
-      const cx = lerp(X0 - 500, X1 + 500, eio(sw));
-      const g = ctx.createLinearGradient(cx - 240, YT, cx + 240, YB);
-      g.addColorStop(0, rgba(GOLD, 0));
-      g.addColorStop(0.5, rgba(GOLD, 0.32));
-      g.addColorStop(1, rgba(GOLD, 0));
-      ctx.globalCompositeOperation = 'screen';
-      ctx.fillStyle = g;
-      ctx.fillRect(X0, YT, NC * CW, NR * RH);
-      ctx.restore();
     }
   }
-}
-
-// Datos de interfaz durante el tejido (en coordenadas de pantalla).
-function hud(ctx, t) {
-  const a = win(t, 12.7, 13.1, 15.0, 15.4);
-  if (a <= 0) return;
-  const r = Math.min(NR, Math.floor(rowsDone(t)));
-  setFont(ctx, 15, { fam: 'Jost', w: 300, ls: 6 });
-  ctx.textBaseline = 'alphabetic';
-  ctx.fillStyle = rgba(GOLD, 0.85 * a);
-  ctx.textAlign = 'right';
-  ctx.fillText(`PASS ${String(r).padStart(3, '0')} / ${NR}`, 1780, 1000);
-  ctx.textAlign = 'left';
-  ctx.fillStyle = rgba(CRUDO, 0.6 * a);
-  ctx.fillText('CUSCO, PERU  ·  13°32′S  71°58′W', 150, 1000);
-  ctx.strokeStyle = rgba(GOLD, 0.6 * a);
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(150, 970); ctx.lineTo(150 + 60 * a, 970); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(1780, 970); ctx.lineTo(1780 - 60 * a, 970); ctx.stroke();
 }
 
 function win(t, a, b, c, d) { return Math.min(smooth(prog(t, a, b)), 1 - smooth(prog(t, c, d))); }
 
 // ============================================================ 6 · APUS
-// La franja de montañas del textil se desprende y se vuelve la cordillera.
+// La franja de montañas del textil se desprende como línea de oro y se vuelve la
+// cordillera. Delante sube la silueta en Noche Andina: el mismo paisaje de la
+// portada del manual, que se queda como base de la firma final.
 const RIDGE_N = 320;
-const RIDGE_SRC = [], RIDGE_TGT = [], RIDGE_BACK = [];
-function makeRange(seed, base, n, hMin, hMax, hero) {
-  const r = mulberry32(seed), peaks = [];
-  for (let i = 0; i < n; i++) {
-    const x = -100 + (i + r() * 0.8) * (W + 200) / n;
-    peaks.push([x, hMin + r() * (hMax - hMin), 110 + r() * 170, 1.2 + r() * 0.6]);
+const RIDGE_SRC = [], RIDGE_TGT = [], NEAR = [];
+
+// Cordillera de tramos rectos, como las del manual. Más baja en el centro para
+// dejar la zona de cielo libre al logotipo.
+function angularRange(seed, n, base, hMin, hMax, spires) {
+  const r = mulberry32(seed), v = [];
+  for (let i = 0; i <= n; i++) {
+    const x = -40 + i * (W + 80) / n + (i > 0 && i < n ? (r() - 0.5) * 50 : 0);
+    const dip = 1 - 0.6 * Math.exp(-Math.pow((x - 960) / 420, 2));
+    v.push([x, base - (hMin + r() * (hMax - hMin)) * dip]);
   }
-  if (hero) peaks.push(hero);
+  for (const [i, h] of spires) v[i][1] = base - h;
   return x => {
-    let h = 0;
-    for (const [px, ph, pw, sh] of peaks) h = Math.max(h, ph * Math.pow(Math.max(0, 1 - Math.abs(x - px) / pw), sh));
-    return base - h - 7 * N3(x * 0.05, seed) - 4 * N1(x * 0.17, seed);
+    for (let i = 1; i < v.length; i++) {
+      if (x <= v[i][0]) { const [x0, y0] = v[i - 1], [x1, y1] = v[i]; return lerp(y0, y1, (x - x0) / (x1 - x0)); }
+    }
+    return v[v.length - 1][1];
   };
 }
 (() => {
-  const front = makeRange(5, 800, 11, 70, 220, [1180, 390, 330, 1.25]);
-  const back = makeRange(9, 760, 14, 120, 300, [700, 330, 300, 1.3]);
+  const far = angularRange(5, 26, 800, 50, 200, [[3, 300], [22, 350], [23, 240]]);
+  const near = angularRange(13, 18, 1010, 60, 130, []);
   for (let i = 0; i < RIDGE_N; i++) {
     const u = i / (RIDGE_N - 1);
     const sx = lerp(X0 + 7.5, X1 - 7.5, u);
     const cc = (sx - X0) / CW - 0.5;
     RIDGE_SRC.push([sx, YB - (42 + tri(cc + 5) + 0.5) * RH]);
-    const tx = lerp(-30, W + 30, u);
-    RIDGE_TGT.push([tx, front(tx)]);
-    RIDGE_BACK.push([tx, back(tx)]);
+    const tx = lerp(-40, W + 40, u);
+    RIDGE_TGT.push([tx, far(tx)]);
+    NEAR.push([tx, near(tx)]);
   }
 })();
 
+// La cámara sube al cielo para la firma: la cordillera baja hacia el borde.
+function apusSink(t) { return eio(prog(t, 17.2, 18.4)); }
+
 function sApus(ctx, t) {
-  const push = 1 + 0.04 * prog(t, 15.4, 17.8);
-  const sink = 160 * ei3(prog(t, 17.3, 17.85));
-  ctx.translate(960, 540);
-  ctx.scale(push, push);
-  ctx.translate(-960, -540 - sink * 0);
+  const sink = apusSink(t);
+  const rise = 1 - eio(prog(t, 15.9, 16.8));
 
-  const pts = [];
-  for (let i = 0; i < RIDGE_N; i++) {
-    const u = i / (RIDGE_N - 1), d = Math.abs(u - 0.5);
-    const m = eio(prog(t, 15.45 + 0.3 * d, 16.25 + 0.3 * d));
-    pts.push([lerp(RIDGE_SRC[i][0], RIDGE_TGT[i][0], m), lerp(RIDGE_SRC[i][1], RIDGE_TGT[i][1], m) + sink]);
-  }
-  const out = 1 - smooth(prog(t, 17.35, 17.85));
-
-  // cordillera lejana
-  const bA = smooth(prog(t, 16.05, 16.8)) * out;
-  if (bA > 0) {
-    ctx.beginPath();
-    ctx.moveTo(-40, H + 10);
-    for (const [x, y] of RIDGE_BACK) ctx.lineTo(x, y + 30 * (1 - bA) + sink * 0.6);
-    ctx.lineTo(W + 40, H + 10);
-    ctx.closePath();
-    const g = ctx.createLinearGradient(0, 420, 0, H);
-    g.addColorStop(0, rgba(VIOLET, 0.55 * bA));
-    g.addColorStop(1, rgba(NIGHT, 0.4 * bA));
-    ctx.fillStyle = g;
-    ctx.fill();
-    ctx.strokeStyle = rgba(GOLD, 0.25 * bA);
-    ctx.lineWidth = 0.8;
-    ctx.stroke();
-  }
-  // masa de la montaña principal
-  const fA = smooth(prog(t, 15.95, 16.6)) * out;
-  if (fA > 0) {
-    ctx.beginPath();
-    ctx.moveTo(-40, H + 10);
-    for (const [x, y] of pts) ctx.lineTo(x, y);
-    ctx.lineTo(W + 40, H + 10);
-    ctx.closePath();
-    const g = ctx.createLinearGradient(0, 450, 0, H);
-    g.addColorStop(0, rgba(mixc(NIGHT, VIOLET, 0.55), fA));
-    g.addColorStop(1, rgba(NIGHT, fA));
-    ctx.fillStyle = g;
-    ctx.fill();
-  }
-  // neblina
-  if (fA > 0) {
-    for (let k = 0; k < 3; k++) {
-      const mx = ((t * (18 + k * 9) + k * 700) % 2600) - 340;
-      ctx.save();
-      ctx.translate(mx, 700 + k * 60 + sink);
-      ctx.scale(1, 0.12);
-      glowDot(ctx, 0, 0, 700, CRUDO, 0.06 * fA);
-      ctx.restore();
-    }
-  }
-  // la línea de oro
-  const lA = smooth(prog(t, 15.28, 15.45)) * out;
+  // línea de oro: nace exactamente sobre la franja de montañas del textil
+  const lA = smooth(prog(t, 15.28, 15.45));
   if (lA > 0) {
-    ctx.lineJoin = 'round';
-    ctx.strokeStyle = rgba(GOLD, 0.18 * lA);
-    ctx.lineWidth = 8;
-    ctx.beginPath();
-    pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
-    ctx.stroke();
+    ctx.lineJoin = 'miter';
     ctx.strokeStyle = rgba(GOLD, 0.95 * lA);
-    ctx.lineWidth = 1.8;
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    for (let i = 0; i < RIDGE_N; i++) {
+      const u = i / (RIDGE_N - 1), d = Math.abs(u - 0.5);
+      const m = eio(prog(t, 15.45 + 0.3 * d, 16.25 + 0.3 * d));
+      const x = lerp(RIDGE_SRC[i][0], RIDGE_TGT[i][0], m);
+      const y = lerp(RIDGE_SRC[i][1], RIDGE_TGT[i][1], m) + 150 * sink;
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
     ctx.stroke();
+  }
+  // silueta cercana en Noche Andina, sólida
+  if (rise < 1) {
+    ctx.beginPath();
+    ctx.moveTo(-40, H + 10);
+    for (const [x, y] of NEAR) ctx.lineTo(x, y + 280 * rise + 40 * sink);
+    ctx.lineTo(W + 40, H + 10);
+    ctx.closePath();
+    ctx.fillStyle = rgba(NIGHT);
+    ctx.fill();
   }
   words(ctx, [['From', 0], ['the', 0], ['Andes', 0], ['to', 0], ['Utah.', 1]], 960, 330, {
     size: 76, align: 'center', tIn: 15.95, tOut: 17.4, t, stagger: 0.1, dur: 0.7, rise: 20, blur: 12,
   });
 }
 
-// ============================================================ 7 · CHAKANA Y LOGO
-// La Cruz del Sur se enciende y la Chakana se dibuja a su alrededor.
-const CHAK_C = [960, 372], CHAK_U = 40;
-const CHAK_PTS = [[-1, -3], [1, -3], [1, -2], [2, -2], [2, -1], [3, -1], [3, 1], [2, 1], [2, 2], [1, 2], [1, 3], [-1, 3], [-1, 2], [-2, 2], [-2, 1], [-3, 1], [-3, -1], [-2, -1], [-2, -2], [-1, -2]];
-const CRUX = [[0.05, -2.45, 2.6], [-0.1, 2.55, 3.2], [-1.75, 0.25, 2.4], [1.55, -0.55, 2.0], [0.55, 0.85, 1.2]];
+// ============================================================ 7 · FIRMA
+// Firma vertical con descriptor (manual 2.2): Chakana de doble contorno sobre la
+// retícula de 9×9 módulos, nombre en versalitas (Cormorant 500, tracking +420),
+// el hilo con rombo central y el descriptor en cursiva. Sin sombras ni efectos
+// (2.6): todo entra por trazo o por fundido y termina quieto.
+const LOGO_C = [960, 292], MOD = 20;  // centro de la Chakana y módulo de la retícula
+const CHAK = [[-1, -4], [1, -4], [1, -3], [2, -3], [2, -2], [3, -2], [3, -1], [4, -1], [4, 1], [3, 1], [3, 2], [2, 2],
+  [2, 3], [1, 3], [1, 4], [-1, 4], [-1, 3], [-2, 3], [-2, 2], [-3, 2], [-3, 1], [-4, 1], [-4, -1], [-3, -1], [-3, -2],
+  [-2, -2], [-2, -3], [-1, -3]];
+const CHAK_LEN = 32 * MOD;   // perímetro del contorno exterior: 32 módulos
+const INNER = 0.6;          // el contorno interior es el exterior a escala 0,6
 
 function chakanaPath(ctx, sc) {
   ctx.beginPath();
-  CHAK_PTS.forEach(([x, y], i) => {
-    const px = CHAK_C[0] + x * CHAK_U * sc, py = CHAK_C[1] + y * CHAK_U * sc;
+  CHAK.forEach(([x, y], i) => {
+    const px = LOGO_C[0] + x * MOD * sc, py = LOGO_C[1] + y * MOD * sc;
     i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
   });
   ctx.closePath();
 }
-const CHAK_LEN = 24 * CHAK_U; // perímetro: 24 unidades
+
+// Constelaciones en Oro Inca (manual 3.5): la Cruz del Sur con sus punteros,
+// arriba a la izquierda, y las Pléyades (Qollqa) arriba a la derecha, siempre
+// fuera del área de reserva del logotipo.
+const CRUX = {
+  stars: [[420, 140, 3.4], [436, 300, 4.0], [370, 232, 3.6], [482, 200, 2.8], [455, 262, 2.2], [285, 262, 3.4], [212, 284, 4.0]],
+  lines: [[0, 1], [2, 3], [5, 6]],
+};
+const QOLLQA = {
+  stars: [[1560, 196, 2.6], [1598, 172, 3.0], [1630, 186, 2.4], [1662, 160, 2.8], [1612, 214, 2.2], [1650, 222, 2.6]],
+  lines: [[0, 1], [1, 2], [2, 3], [2, 4], [4, 5]],
+};
+
+function constellation(ctx, c, t, t0) {
+  c.stars.forEach(([x, y, r], i) => {
+    const a = smooth(prog(t, t0 + i * 0.07, t0 + i * 0.07 + 0.35));
+    if (a <= 0) return;
+    ctx.fillStyle = rgba(GOLD, a);
+    ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+  });
+  const lp = eio(prog(t, t0 + 0.3, t0 + 0.9));
+  if (lp <= 0) return;
+  ctx.strokeStyle = rgba(GOLD, 0.7);
+  ctx.lineWidth = 1;
+  for (const [a, b] of c.lines) {
+    const [ax, ay] = c.stars[a], [bx, by] = c.stars[b];
+    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(lerp(ax, bx, lp), lerp(ay, by, lp)); ctx.stroke();
+  }
+}
 
 function sLogo(ctx, t) {
-  const z = 1 + 0.03 * eo3(prog(t, 17.4, 20));
+  const z = 1 + 0.02 * eo3(prog(t, 17.4, 20));
   ctx.translate(960, 540);
   ctx.scale(z, z);
   ctx.translate(-960, -540);
 
-  // Cruz del Sur
-  const ig = prog(t, 17.42, 17.75);
-  const crossOut = 1 - smooth(prog(t, 18.3, 18.9));
-  if (ig > 0) {
-    CRUX.forEach(([x, y, m], i) => {
-      const e = eoBack(prog(t, 17.42 + i * 0.04, 17.8 + i * 0.04), 2);
-      const px = CHAK_C[0] + x * CHAK_U, py = CHAK_C[1] + y * CHAK_U;
-      const a = clamp(e) * (0.45 + 0.55 * crossOut);
-      glowDot(ctx, px, py, 36 * m * Math.max(0, e), GOLD, 0.5 * a);
-      ctx.fillStyle = rgba(CRUDO, a);
-      ctx.beginPath(); ctx.arc(px, py, 1.1 * m * Math.max(0.01, e), 0, TAU); ctx.fill();
-    });
-    const lp = eio(prog(t, 17.55, 17.95));
-    ctx.strokeStyle = rgba(GOLD, 0.55 * crossOut);
-    ctx.lineWidth = 1;
-    for (const [a, b] of [[0, 1], [2, 3]]) {
-      const [ax, ay] = CRUX[a], [bx, by] = CRUX[b];
-      ctx.beginPath();
-      ctx.moveTo(CHAK_C[0] + ax * CHAK_U, CHAK_C[1] + ay * CHAK_U);
-      ctx.lineTo(CHAK_C[0] + lerp(ax, bx, lp) * CHAK_U, CHAK_C[1] + lerp(ay, by, lp) * CHAK_U);
-      ctx.stroke();
-    }
-  }
+  constellation(ctx, CRUX, t, 17.45);
+  constellation(ctx, QOLLQA, t, 17.85);
 
-  // Chakana: trazo fino de oro que se dibuja
-  const cp = eio(prog(t, 17.75, 18.75));
-  if (cp > 0) {
-    ctx.save();
-    ctx.lineJoin = 'miter';
-    ctx.shadowColor = rgba(GOLD, 0.6);
-    ctx.shadowBlur = 12;
-    ctx.strokeStyle = rgba(GOLD, 1);
-    ctx.lineWidth = 1.8;
-    ctx.setLineDash([CHAK_LEN * cp, CHAK_LEN]);
+  // Chakana: hilos de oro que se dibujan y la cierran completa
+  ctx.save();
+  ctx.lineJoin = 'miter';
+  ctx.lineCap = 'butt';
+  ctx.strokeStyle = rgba(GOLD);
+  ctx.lineWidth = 2.4;
+  const p1 = eio(prog(t, 17.6, 18.35)), p2 = eio(prog(t, 17.75, 18.45));
+  if (p1 > 0) {
+    ctx.setLineDash([CHAK_LEN * p1, CHAK_LEN]);
     chakanaPath(ctx, 1);
     ctx.stroke();
-    const cp2 = eio(prog(t, 17.95, 18.95));
-    ctx.setLineDash([CHAK_LEN * 0.8 * cp2, CHAK_LEN]);
-    ctx.lineWidth = 0.9;
-    ctx.strokeStyle = rgba(GOLD, 0.6);
-    chakanaPath(ctx, 0.8);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    const ccp = eio(prog(t, 18.25, 18.85));
-    if (ccp > 0) {
-      ctx.lineWidth = 1.4;
-      ctx.strokeStyle = rgba(GOLD, 0.95);
-      ctx.beginPath();
-      ctx.arc(CHAK_C[0], CHAK_C[1], CHAK_U * 0.62, -Math.PI / 2, -Math.PI / 2 + TAU * ccp);
-      ctx.stroke();
-    }
-    ctx.restore();
-    // brillo que recorre la Chakana
-    const gl = prog(t, 19.15, 19.85);
-    if (gl > 0 && gl < 1) {
-      const gx = lerp(CHAK_C[0] - 200, CHAK_C[0] + 200, eio(gl));
-      const g = ctx.createLinearGradient(gx - 60, CHAK_C[1] - 120, gx + 60, CHAK_C[1] + 120);
-      g.addColorStop(0, rgba(CRUDO, 0));
-      g.addColorStop(0.5, rgba(CRUDO, 0.9));
-      g.addColorStop(1, rgba(CRUDO, 0));
-      ctx.strokeStyle = g;
-      ctx.lineWidth = 2.2;
-      chakanaPath(ctx, 1);
-      ctx.stroke();
-    }
   }
+  if (p2 > 0) {
+    ctx.setLineDash([CHAK_LEN * INNER * p2, CHAK_LEN]);
+    chakanaPath(ctx, INNER);
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  const p3 = eio(prog(t, 18.1, 18.5));
+  if (p3 > 0) {
+    ctx.beginPath();
+    ctx.arc(LOGO_C[0], LOGO_C[1], MOD * 0.8, -Math.PI / 2, -Math.PI / 2 + TAU * p3);
+    ctx.stroke();
+  }
+  const pd = smooth(prog(t, 18.4, 18.6));
+  if (pd > 0) {
+    ctx.fillStyle = rgba(GOLD, pd);
+    ctx.beginPath(); ctx.arc(LOGO_C[0], LOGO_C[1], MOD * 0.18, 0, TAU); ctx.fill();
+  }
+  ctx.restore();
 
-  // A N C E S T R A L
-  const word = 'ANCESTRAL';
-  const spacing = lerp(86, 50, eo3(prog(t, 17.95, 19.4)));
-  setFont(ctx, 108, { w: 500 });
-  const ws = [...word].map(ch => ctx.measureText(ch).width);
-  const total = ws.reduce((a, b) => a + b, 0) + spacing * (word.length - 1);
-  let x = 960 - total / 2;
+  // A N C E S T R A L: Cormorant 500, tracking +420 fijo; entra por fundido
+  const word = 'ANCESTRAL', size = 100, track = size * 0.42, base = 532;
+  setFont(ctx, size, { w: 500 });
+  const cw = [...word].map(ch => ctx.measureText(ch).width);
+  const nameW = cw.reduce((a, b) => a + b, 0) + track * (word.length - 1);
+  let x = 960 - nameW / 2;
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
   [...word].forEach((ch, i) => {
     const o = Math.abs(i - 4);
-    const p = eo3(prog(t, 18.0 + o * 0.075, 18.6 + o * 0.075));
+    const p = smooth(prog(t, 17.95 + o * 0.05, 18.5 + o * 0.05));
     if (p > 0.003) {
-      ctx.save();
-      const b = (1 - p) * 14;
-      ctx.filter = b > 0.3 ? `blur(${b.toFixed(2)}px)` : 'none';
       ctx.fillStyle = rgba(CRUDO, p);
-      ctx.fillText(ch, x, 676 + (1 - p) * 16);
-      ctx.restore();
+      ctx.fillText(ch, x, base);
     }
-    x += ws[i] + spacing;
+    x += cw[i] + track;
   });
 
-  words(ctx, [['Legacy', 1], ['and', 1], ['mystique,', 1], ['woven', 1], ['by', 1], ['the', 1], ['Andes.', 1]], 960, 762, {
-    size: 46, align: 'center', tIn: 18.55, tOut: 99, t, stagger: 0.06, dur: 0.6, rise: 12, blur: 8, alpha: 0.92,
-  });
-
-  // NOW IN UTAH
-  const np = eo3(prog(t, 18.95, 19.6));
-  if (np > 0) {
-    setFont(ctx, 17, { fam: 'Jost', w: 400, ls: 10 });
-    const label = 'NOW IN UTAH';
-    const lw = ctx.measureText(label).width - 10;
-    ctx.fillStyle = rgba(GOLD, np);
-    ctx.textAlign = 'left';
-    ctx.fillText(label, 960 - lw / 2, 850);
-    ctx.strokeStyle = rgba(GOLD, 0.8 * np);
-    ctx.lineWidth = 1;
-    const gap = lw / 2 + 26, len = 80 * np;
+  // el hilo: línea fina con rombo central que une el símbolo con el nombre
+  const hy = 604, hw = nameW * 0.31, dh = 9;
+  const hp = eio(prog(t, 18.45, 18.95));
+  const dA = smooth(prog(t, 18.4, 18.6));
+  ctx.strokeStyle = rgba(GOLD);
+  ctx.lineWidth = 1.5;
+  if (dA > 0) {
+    ctx.globalAlpha = dA;
     ctx.beginPath();
-    ctx.moveTo(960 - gap, 844); ctx.lineTo(960 - gap - len, 844);
-    ctx.moveTo(960 + gap, 844); ctx.lineTo(960 + gap + len, 844);
+    ctx.moveTo(960, hy - dh); ctx.lineTo(960 + dh, hy); ctx.lineTo(960, hy + dh); ctx.lineTo(960 - dh, hy); ctx.closePath();
     ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+  if (hp > 0) {
+    const g0 = dh + 10, g1 = lerp(g0, hw, hp);
+    ctx.beginPath();
+    ctx.moveTo(960 - g0, hy); ctx.lineTo(960 - g1, hy);
+    ctx.moveTo(960 + g0, hy); ctx.lineTo(960 + g1, hy);
+    ctx.stroke();
+  }
+
+  // descriptor en cursiva, en Crudo (como en la portada del manual)
+  words(ctx, [['Legacy', 1], ['and', 1], ['mystique,', 1], ['woven', 1], ['by', 1], ['the', 1], ['Andes.', 1]], 960, 712, {
+    size: 46, align: 'center', itColor: CRUDO, tIn: 18.7, tOut: 99, t, stagger: 0.05, dur: 0.6, rise: 8, blur: 0,
+  });
+
+  // NOW IN UTAH: etiqueta Jost 400 con tracking +300, al pie y fuera del área
+  // de reserva de la firma (2x el brazo de la Chakana)
+  const np = smooth(prog(t, 19.0, 19.45));
+  if (np > 0) {
+    setFont(ctx, 18, { fam: 'Jost', w: 400, ls: 18 * 0.3 });
+    const label = 'NOW IN UTAH';
+    const lw = ctx.measureText(label).width - 18 * 0.3;
+    ctx.fillStyle = rgba(GOLD, np);
+    ctx.fillText(label, 960 - lw / 2, 1018);
   }
 }
 
 // ============================================================ rótulos de capítulo
+// Etiqueta en Jost 400 mayúsculas con tracking +300 en Oro Inca sobre el titular
+// (como "CAPÍTULO 01" en el manual) y titular en Cormorant 400 con una sola
+// palabra mágica en cursiva.
 const LABELS = [
   { a: 2.8, b: 4.85, n: '01', cap: 'FIBER', ws: [['Sacred', 1], ['alpaca', 0], ['fiber', 0]] },
-  { a: 5.15, b: 7.25, n: '02', cap: 'SPIN', ws: [['Spun', 0], ['by', 0], ['hand,', 0], ['twist', 1], ['by', 1], ['twist', 1]] },
-  { a: 8.2, b: 9.78, n: '03', cap: 'DYE', ws: [['Cochineal,', 1], ['the', 0], ['red', 0], ['of', 0], ['the', 0], ['Inca', 0]] },
-  { y: 250, a: 10.4, b: 12.25, n: '04', cap: 'WARP', ws: [['Strung', 0], ['on', 0], ['the', 0], ['backstrap', 1], ['loom', 1]] },
-  { y: 250, a: 12.85, b: 15.0, n: '05', cap: 'WEAVE', ws: [['Woven', 0], ['in', 0], ['Cusco,', 0], ['closer', 0], ['to', 0], ['the', 0], ['sky', 1]] },
+  { a: 5.15, b: 7.0, n: '02', cap: 'SPIN', ws: [['Spun', 0], ['by', 0], ['hand,', 0], ['twist', 1], ['by', 1], ['twist', 1]] },
+  { a: 8.3, b: 9.7, n: '03', cap: 'DYE', ws: [['Cochineal,', 1], ['the', 0], ['red', 0], ['of', 0], ['the', 0], ['Inca', 0]] },
+  { y: 270, a: 10.4, b: 12.25, n: '04', cap: 'WARP', ws: [['Strung', 0], ['on', 0], ['the', 0], ['backstrap', 1], ['loom', 1]] },
+  { y: 270, a: 12.85, b: 15.0, n: '05', cap: 'WEAVE', ws: [['Woven', 0], ['in', 0], ['Cusco,', 0], ['closer', 0], ['to', 0], ['the', 0], ['sky', 1]] },
 ];
 
 function labels(ctx, t) {
   for (const L of LABELS) {
-    if (t < L.a - 0.1 || t > L.b + 0.45) continue;
+    if (t < L.a - 0.15 || t > L.b + 0.45) continue;
     const x = 150, y = L.y || 900;
+    // velo de legibilidad en Noche Andina (manual 3.4)
     const sh = win(t, L.a - 0.15, L.a + 0.4, L.b - 0.1, L.b + 0.4);
     if (sh > 0) {
       ctx.save();
-      ctx.translate(x + 280, y - 10);
-      ctx.scale(1, 0.4);
+      ctx.translate(x + 280, y - 30);
+      ctx.scale(1, 0.42);
       const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 560);
       g.addColorStop(0, rgba(NIGHT, 0.72 * sh));
       g.addColorStop(1, rgba(NIGHT, 0));
@@ -1065,31 +988,24 @@ function labels(ctx, t) {
       ctx.fillRect(-560, -560, 1120, 1120);
       ctx.restore();
     }
-    words(ctx, L.ws, x, y, { size: 64, tIn: L.a + 0.12, tOut: L.b, t, stagger: 0.075 });
-    const pr = eo3(prog(t, L.a, L.a + 0.55)), po = smooth(prog(t, L.b - 0.25, L.b + 0.05));
-    const a = 1 - po;
-    if (a <= 0 || pr <= 0) continue;
-    ctx.strokeStyle = rgba(GOLD, 0.95 * a);
-    ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(x, y + 44); ctx.lineTo(x + 56 * pr, y + 44); ctx.stroke();
-    ctx.textAlign = 'left';
-    setFont(ctx, 17, { fam: 'Jost', w: 400, ls: 6 + 10 * (1 - pr) });
-    ctx.fillStyle = rgba(GOLD, a * pr);
-    ctx.fillText(L.n, x + 76, y + 50);
-    const nw = ctx.measureText(L.n).width;
-    setFont(ctx, 17, { fam: 'Jost', w: 300, ls: 9 + 12 * (1 - pr) });
-    ctx.fillStyle = rgba(CRUDO, 0.82 * a * pr);
-    ctx.fillText(L.cap, x + 76 + nw + 18, y + 50);
+    const a = smooth(prog(t, L.a, L.a + 0.45)) * (1 - smooth(prog(t, L.b - 0.3, L.b)));
+    if (a > 0) {
+      setFont(ctx, 20, { fam: 'Jost', w: 400, ls: 20 * 0.3 });
+      ctx.textAlign = 'left';
+      ctx.fillStyle = rgba(GOLD, a);
+      ctx.fillText(`${L.n}  ·  ${L.cap}`, x, y - 74);
+    }
+    words(ctx, L.ws, x, y, { size: 64, tIn: L.a + 0.15, tOut: L.b, t, stagger: 0.075 });
   }
 }
 
 // ============================================================ composición
 const SCENES = [
   { a: 0, b: 2.7, draw: sIntro, alpha: t => 1 - smooth(prog(t, 2.36, 2.62)), blur: t => 10 * ei2(prog(t, 2.18, 2.62)) },
-  { a: 2.34, b: 7.65, draw: sFiber, alpha: t => smooth(prog(t, 2.36, 2.6)) * (1 - smooth(prog(t, 7.44, 7.62))), blur: t => 10 * (1 - eo3(prog(t, 2.36, 2.95))) },
-  { a: 7.4, b: 10.2, draw: sDye, alpha: t => smooth(prog(t, 7.42, 7.6)) },
+  { a: 2.34, b: 7.8, draw: sFiber, alpha: t => smooth(prog(t, 2.36, 2.6)) * (1 - smooth(prog(t, 7.45, 7.75))), blur: t => 10 * (1 - eo3(prog(t, 2.36, 2.95))) },
+  { a: 7.44, b: 10.3, draw: sDye, alpha: t => smooth(prog(t, 7.45, 7.75)) * (1 - smooth(prog(t, 10.05, 10.25))) },
   { a: 9.88, b: 16.1, draw: sLoom, alpha: t => smooth(prog(t, 9.88, 10.0)) * (1 - smooth(prog(t, 15.5, 16.05))), blur: t => 7 * ei2(prog(t, 15.5, 16.05)) },
-  { a: 15.25, b: 17.9, draw: sApus, alpha: () => 1 },
+  { a: 15.25, b: 20.5, draw: sApus, alpha: () => 1 },
   { a: 17.38, b: 20.5, draw: sLogo, alpha: () => 1 },
 ];
 
@@ -1103,7 +1019,7 @@ const VIG = (() => {
   const c = mk(), x = c.getContext('2d');
   const g = x.createRadialGradient(W / 2, H / 2, H * 0.32, W / 2, H / 2, H * 1.02);
   g.addColorStop(0, rgba(NIGHT, 0));
-  g.addColorStop(1, rgba(NIGHT, 0.78));
+  g.addColorStop(1, rgba(NIGHT, 0.5));
   x.fillStyle = g;
   x.fillRect(0, 0, W, H);
   return c;
@@ -1132,8 +1048,9 @@ function grain(ctx, f) {
   const p = ctx.createPattern(GRAIN[g % GRAIN.length], 'repeat');
   p.setTransform(new DOMMatrix().translate(Math.floor(r() * 384), Math.floor(r() * 384)));
   ctx.save();
+  // ≈3,3 % de grano (convención "Añadir ruido"), dentro del 3–5 % del manual (3.4)
   ctx.globalCompositeOperation = 'soft-light';
-  ctx.globalAlpha = 0.22;
+  ctx.globalAlpha = 0.26;
   ctx.fillStyle = p;
   ctx.fillRect(0, 0, W, H);
   ctx.restore();
@@ -1165,12 +1082,11 @@ function compose(ctx, t) {
     ctx.restore();
   }
   labels(ctx, t);
-  hud(ctx, t);
   ctx.drawImage(VIG, 0, 0);
 }
 
 // Desenfoque de movimiento por sub-cuadros en los tramos rápidos.
-const MB = [[2.12, 2.7, 6], [7.15, 7.8, 8], [9.78, 10.2, 8], [12.15, 12.8, 4], [14.2, 15.3, 3]];
+const MB = [[2.12, 2.7, 6], [7.0, 8.2, 4], [9.7, 10.3, 6], [12.15, 12.8, 4], [14.2, 15.3, 3]];
 function mbSamples(t) {
   for (const [a, b, n] of MB) if (t >= a && t <= b) return n;
   return 1;
