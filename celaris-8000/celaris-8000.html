@@ -240,11 +240,11 @@ html, body { width: 1080px; height: 1350px; overflow: hidden; background: #24083
 #L3 { background: linear-gradient(135deg, #24083e 0%, #653bec 100%); color: #fff; }
 #endWrap { left: 0; top: -40px; width: 1080px; height: 1350px; display: flex; flex-direction: column;
   align-items: center; justify-content: center; text-align: center; }
-#endWrap .line { font-size: 138px; font-weight: 800; line-height: 1.02; letter-spacing: -0.035em; }
-#endWrap .cel-bar { margin-top: 40px; width: 120px; height: 10px; border-radius: 5px; }
-#ctaLead { margin-top: 44px; font-size: 34px; font-weight: 400; opacity: .92; }
-#ctas { margin-top: 30px; display: flex; gap: 18px; justify-content: center; }
-.cta { position: relative; font-size: 30px; padding: 16px 30px 16px 18px; gap: 14px; }
+#endWrap .line { font-size: 150px; font-weight: 800; line-height: 1.02; letter-spacing: -0.035em; }
+#endWrap .cel-bar { margin: 40px 0 34px; width: 120px; height: 10px; border-radius: 5px; }
+#ctaLead { font-size: 48px; font-weight: 500; line-height: 1.22; letter-spacing: -0.01em; }
+#ctas { margin-top: 46px; display: flex; gap: 18px; justify-content: center; }
+.cta { position: relative; font-size: 28px; padding: 14px 28px 14px 14px; gap: 12px; }
 .cta .ico { width: 50px; height: 50px; border-radius: 50%; background: #fff; display: inline-flex;
   align-items: center; justify-content: center; flex: none; }
 .cta .ico svg { width: 28px; height: 28px; fill: none; stroke: var(--cel-morado); stroke-width: 2.2;
@@ -315,14 +315,14 @@ html, body { width: 1080px; height: 1350px; overflow: hidden; background: #24083
     <div class="bloom" id="bloom3"></div>
     <div class="cel-texture-dots" style="color:#fff;opacity:.07"></div>
     <div class="abs" id="endWrap">
-      <div class="mask line"><span id="e1">¡Sigamos</span></div>
-      <div class="mask line"><span id="e2">creciendo!</span></div>
+      <div id="ctaLead"><div class="mask"><span id="lead1">Cada interacción que realizas</span></div><div class="mask"><span id="lead2">lleva nuestra energía más lejos</span></div></div>
       <div class="cel-bar" id="ebar"></div>
-      <div id="ctaLead">Cada interacción lleva nuestra energía más lejos</div>
+      <div class="mask line"><span id="e1">Por ello</span></div>
+      <div class="mask line"><span id="e2">sigamos</span></div>
       <div id="ctas">
-        <span class="cel-pill cel-pill--outline cta" id="cta1"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg></span>Dale like<i class="ripple"></i></span>
-        <span class="cel-pill cel-pill--outline cta" id="cta2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></span>Comenta<i class="ripple"></i></span>
-        <span class="cel-pill cel-pill--acento cta" id="cta3"><span class="ico"><svg viewBox="0 0 24 24" style="stroke:#e38a22"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></svg></span>Comparte<i class="ripple"></i></span>
+        <span class="cel-pill cel-pill--outline cta" id="cta1"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg></span>Dando like<i class="ripple"></i></span>
+        <span class="cel-pill cel-pill--outline cta" id="cta2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></span>Comentando<i class="ripple"></i></span>
+        <span class="cel-pill cel-pill--acento cta" id="cta3"><span class="ico"><svg viewBox="0 0 24 24" style="stroke:#e38a22"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></svg></span>Compartiendo<i class="ripple"></i></span>
       </div>
     </div>
     <div class="foot" id="footL">celarisenergy.pe</div>
@@ -408,7 +408,7 @@ function render(t) {
 
   // ---------- Escena 2: anillo + contador ----------
   const ringIn = outExpo(p(t, 2.08, 0.8));
-  const ringOut = inOutExpo(p(t, 5.55, 0.6));
+  const ringOut = inOutExpo(p(t, 5.3, 0.6));
   const ringScale = lerp(0.6, 1, ringIn) * lerp(1, 1.6, ringOut);
   const sceneOp = ringIn * (1 - ringOut);
   const svg = $('ringwrap');
@@ -445,49 +445,50 @@ function render(t) {
   }
 
   // ---------- Transición L1 → L2 (barrido desde abajo) ----------
-  const w = inOutExpo(p(t, 5.75, 0.75));
+  const w = inOutExpo(p(t, 5.5, 0.7));
   const edge = lerp(1350 + 40, 0, w);           // borde superior del blanco
   $('L2').style.clipPath = `inset(${Math.max(0, edge)}px 0 0 0)`;
-  const bandW = inOutExpo(p(t, 5.68, 0.75));
+  const bandW = inOutExpo(p(t, 5.43, 0.7));
   const bandTop = lerp(1350 + 10, -36, bandW);
   set($('band'), { top: bandTop + 'px', display: bandW > 0 && bandW < 1 ? 'block' : 'none' });
 
   // ---------- Escena 3 ----------
-  set($('s3pill'), { transform: `scale(${outBack(p(t, 6.1, 0.55))})`, transformOrigin: '0 50%' });
-  line($('s3l1'), t, 6.22, 99);
-  line($('s3l2'), t, 6.38, 99);
-  set($('s3bar'), { width: lerp(0, 160, outExpo(p(t, 6.9, 0.8))) + 'px' });
-  const bc = outBack(p(t, 6.5, 0.8), 1.4);
+  set($('s3pill'), { transform: `scale(${outBack(p(t, 5.85, 0.55))})`, transformOrigin: '0 50%' });
+  line($('s3l1'), t, 5.95, 99);
+  line($('s3l2'), t, 6.1, 99);
+  set($('s3bar'), { width: lerp(0, 160, outExpo(p(t, 6.4, 0.8))) + 'px' });
+  const bc = outBack(p(t, 6.2, 0.8), 1.4);
   set($('bigCircle'), { transform: `scale(${bc})` });
-  const lg2 = p(t, 6.0, 0.5);
+  const lg2 = p(t, 5.75, 0.5);
   set($('logo2'), { opacity: lg2 });
 
   // ---------- Transición L2 → L3 (el círculo se abre) ----------
-  const c = inOutExpo(p(t, 7.6, 0.8));
+  const c = inOutExpo(p(t, 6.85, 0.75));
   const r = c <= 0 ? 0 : lerp(260, 1750, c);
   $('L3').style.clipPath = `circle(${r}px at 900px 1160px)`;
   $('L3').style.visibility = c > 0 ? 'visible' : 'hidden';
 
   // ---------- Escena 4: cierre ----------
-  set($('bloom3'), { opacity: inOutCubic(p(t, 7.9, 1.4)), transform: `scale(${lerp(1.4, 1, outCubic(p(t, 7.9, 1.6)))})`, transformOrigin: '100% 100%' });
-  line($('e1'), t, 7.88, 99);
-  line($('e2'), t, 8.02, 99);
-  set($('ebar'), { width: lerp(0, 120, outExpo(p(t, 8.25, 0.7))) + 'px' });
-  set($('ctaLead'), { opacity: outCubic(p(t, 8.1, 0.5)), transform: `translateY(${lerp(24, 0, outExpo(p(t, 8.1, 0.7)))}px)` });
+  set($('bloom3'), { opacity: inOutCubic(p(t, 7.2, 1.6)), transform: `scale(${lerp(1.4, 1, outCubic(p(t, 7.2, 1.8)))})`, transformOrigin: '100% 100%' });
+  line($('lead1'), t, 7.15, 99);
+  line($('lead2'), t, 7.27, 99);
+  set($('ebar'), { width: lerp(0, 120, outExpo(p(t, 7.6, 0.7))) + 'px' });
+  line($('e1'), t, 7.8, 99);
+  line($('e2'), t, 7.95, 99);
   // Pastillas CTA: entran al ritmo (corcheas) con un "tap"
-  [[1, 8.40], [2, 8.60], [3, 8.80]].forEach(([i, t0]) => {
+  [[1, 8.40], [2, 8.70], [3, 9.00]].forEach(([i, t0]) => {
     const el = $('cta' + i);
     const k = outBack(p(t, t0, 0.5), 2.4);
-    const press = i === 3 ? 1 - Math.sin(clamp(p(t, 9.40, 0.28)) * Math.PI) * 0.1 : 1;
+    const press = i === 3 ? 1 - Math.sin(clamp(p(t, 9.60, 0.28)) * Math.PI) * 0.1 : 1;
     set(el, { transform: `translateY(${lerp(40, 0, outExpo(p(t, t0, 0.6)))}px) scale(${k * press})`, opacity: clamp(k * 1.5) });
     const rp = el.querySelector('.ripple');
-    const rr = p(t, i === 3 ? 9.40 : t0 + 0.12, 0.6);
+    const rr = p(t, i === 3 ? 9.60 : t0 + 0.12, 0.6);
     set(rp, { opacity: rr > 0 && rr < 1 ? (1 - rr) * 0.6 : 0, transform: `scale(${lerp(0.4, i === 3 ? 2.9 : 2.3, outExpo(rr))})` });
   });
-  const fo = outCubic(p(t, 8.95, 0.6));
+  const fo = outCubic(p(t, 9.0, 0.6));
   set($('footL'), { opacity: fo });
   set($('footR'), { opacity: fo });
-  set($('logo3'), { opacity: outCubic(p(t, 7.8, 0.5)) });
+  set($('logo3'), { opacity: outCubic(p(t, 7.1, 0.5)) });
 }
 
 window.render = render;
