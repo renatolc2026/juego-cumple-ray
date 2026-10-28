@@ -1,12 +1,13 @@
-"""Pista "nu-disco pop" de 13 s para el video de 8000 seguidores.
+"""Pista "nu-disco pop" de 19 s para el video de 8000 seguidores.
 
 Moderna y bailable: bombo four-on-the-floor, bajo en octavas, acordes de
 sintetizador con bombeo, pluck y "vocal chops" sintéticos. Brillo controlado:
 hats y platillos filtrados, sin supersaws.
-100 BPM (negra = 0,6 s, compás = 2,4 s):
-  0,0  intro       · 2,4 build     · 4,8 drop (llega a 8000)
-  7,2  CTA         · 9,6 cierre de marca "Enciende tu poder"
-  12,0 acorde final que resuelve y se apaga en 13 s
+100 BPM (negra = 0,6 s, compás = 2,4 s). Cada escena dura medio compás (1,2 s)
+más que en la versión de 13 s, para dar tiempo de lectura:
+  0,0  intro         · 3,6 build     · 6,0 drop (llega a 8000)
+  10,8 CTA           · 14,4 cierre de marca "Enciende tu poder"
+  18,0 acorde final que resuelve y se apaga en 19 s
 Todo se sintetiza aquí, sin samples. Uso: python3 music.py salida.wav
 """
 import sys
@@ -15,15 +16,16 @@ import numpy as np
 from scipy import signal
 
 SR = 44100
-DUR = 13.0
+DUR = 19.0
 N = int(SR * DUR)
 BEAT = 60 / 100
 BAR = BEAT * 4
 S16 = BEAT / 4
-DROP = 2 * BAR          # 4,8 s
-CTA = 3 * BAR           # 7,2 s
-BRAND = 4 * BAR         # 9,6 s
-FINAL = 5 * BAR         # 12,0 s
+BUILD = 1.5 * BAR       # 3,6 s
+DROP = 2.5 * BAR        # 6,0 s
+CTA = 4.5 * BAR         # 10,8 s
+BRAND = 6 * BAR         # 14,4 s
+FINAL = 7.5 * BAR       # 18,0 s
 rng = np.random.default_rng(8000)
 
 L = np.zeros(N); Rch = np.zeros(N)
@@ -214,17 +216,19 @@ CH = {
 }
 ROOT = {'F': 41, 'C': 36, 'Dm': 38, 'Bb': 34}
 H, Q = BAR / 2, BAR / 4
-INTRO = [(0, BAR, 'F'), (BAR, H, 'Dm'), (BAR + H, Q, 'Bb'), (BAR + H + Q, Q, 'C')]
-GROOVE = [(DROP, H, 'F'), (DROP + H, H, 'C'),
-          (CTA, H, 'Dm'), (CTA + H, Q, 'Bb'), (CTA + H + Q, Q, 'C'),
-          (BRAND, H, 'F'), (BRAND + H, Q, 'Bb'), (BRAND + H + Q, Q, 'C')]
+INTRO = [(0, BAR, 'F'), (BAR, H, 'C'),
+         (BUILD, H, 'Dm'), (BUILD + H, Q, 'Bb'), (BUILD + H + Q, Q, 'C')]
+GROOVE = [(DROP, H, 'F'), (DROP + H, H, 'C'), (DROP + 2 * H, H, 'Dm'), (DROP + 3 * H, H, 'Bb'),
+          (CTA, H, 'Dm'), (CTA + H, H, 'Bb'), (CTA + 2 * H, H, 'C'),
+          (BRAND, H, 'F'), (BRAND + H, H, 'Bb'), (BRAND + 2 * H, H, 'C')]
 # gancho (semicorcheas dentro de cada medio compás): pluck + vocal chop
-HOOK = {'F': [(0, 72), (3, 77), (6, 76)], 'C': [(0, 76), (3, 72), (6, 67)]}
+HOOK = {'F': [(0, 72), (3, 77), (6, 76)], 'C': [(0, 76), (3, 72), (6, 67)],
+        'Dm': [(0, 74), (3, 72), (6, 69)], 'Bb': [(0, 74), (3, 77), (6, 74)]}
 STAB_STEPS = (0, 3, 6)                               # acordes sincopados por medio compás
 
 kick_times = []
 
-# ---------------- 1) intro + build (0 – 4,8 s) ----------------
+# ---------------- 1) intro + build (0 – 6,0 s) ----------------
 for t0, d, ch in INTRO:
     add(pad(CH[ch], d + 0.1, 600 + 2400 * (t0 / DROP) ** 1.3), t0, gain=0.65, rev=0.3, pump=True)
 arp = {'F': [65, 69, 72, 76], 'Dm': [62, 65, 69, 72], 'Bb': [62, 65, 70, 74], 'C': [64, 67, 72, 76]}
@@ -234,13 +238,13 @@ for t0, d, ch in INTRO:
         add(pluck(arp[ch][k % 4]), tk, gain=0.42 + 0.12 * tk / DROP, pan=0.35 * (-1) ** k, rev=0.25, dly=0.3)
 for k in range(int(DROP / (BEAT / 2))):              # hats en corcheas desde el inicio
     add(hat(gain=0.12 + 0.06 * (k % 2)), k * BEAT / 2, pan=0.2)
-for k in range(4):                                   # bombo entrando en el compás 2
-    tk = BAR + k * BEAT
+for k in range(4):                                   # bombo entrando en el build
+    tk = BUILD + k * BEAT
     add(kick(0.45 + 0.15 * k), tk); kick_times.append(tk)
 for k in range(8):                                   # redoble de palmas hacia el drop
-    add(clap(0.15 + 0.05 * k), BAR + 2 * BEAT + k * S16, rev=0.2)
-noise_sweep(2.4, DROP - 2.4, 300, 6000, lambda k: k ** 1.6, gain=0.3)
-add(vchop(77, 0.5, 'o'), BAR + 3 * BEAT + 2 * S16, gain=0.3, rev=0.4, dly=0.3)   # "oh" antes del drop
+    add(clap(0.15 + 0.05 * k), BUILD + 2 * BEAT + k * S16, rev=0.2)
+noise_sweep(BUILD, DROP - BUILD, 300, 6000, lambda k: k ** 1.6, gain=0.3)
+add(vchop(77, 0.5, 'o'), DROP - 2 * S16, gain=0.3, rev=0.4, dly=0.3)   # "oh" antes del drop
 
 gap = np.ones(N)                                     # silencio de 60 ms antes del drop
 g0, g1 = int((DROP - 0.06) * SR), int(DROP * SR)
@@ -248,11 +252,11 @@ gap[g0 - 200:g0] = np.linspace(1, 0, 200); gap[g0:g1] = 0
 for buf in (L, Rch, ML, MR, send_L, send_R, dly_L, dly_R):
     buf *= gap
 
-# ---------------- 2) groove (4,8 – 12,0 s) ----------------
+# ---------------- 2) groove (6,0 – 18,0 s) ----------------
 for tk, g in ((DROP, 0.6), (BRAND, 0.45)):
     add(boom(g), tk)
     add(crash(1.6, 0.16), tk, rev=0.3)
-for k in range(int((FINAL - DROP) / BEAT)):          # four-on-the-floor, palmas en 2 y 4
+for k in range(int(round((FINAL - DROP) / BEAT))):   # four-on-the-floor, palmas en 2 y 4
     tk = DROP + k * BEAT
     add(kick(1.0), tk); kick_times.append(tk)
     if k % 2 == 1:
@@ -268,7 +272,7 @@ for t0, d, ch in GROOVE:
     add(pad(CH[ch], d, 1800), t0, gain=0.14, pump=True)
     for k in range(int(round(d / (BEAT / 2)))):      # bajo en octavas (disco)
         add(bass(ROOT[ch] + 12 * (k % 2), BEAT / 2 * 0.85), t0 + k * BEAT / 2, gain=0.38, pump=True)
-    # gancho en los compases del drop y de la marca; el compás del CTA queda libre
+    # gancho en el drop y en la marca; durante el CTA lo reemplazan las pastillas
     in_cta = CTA - 1e-6 < t0 < BRAND - 1e-6
     if ch in HOOK and not in_cta:
         for st, m in HOOK[ch]:
@@ -276,16 +280,16 @@ for t0, d, ch in GROOVE:
             add(vchop(m, 0.32, 'a'), t0 + st * S16, gain=0.26, pan=-0.15, rev=0.3, dly=0.2)
 
 # transiciones del video
-noise_sweep(5.35, 0.75, 300, 4500, lambda k: np.sin(np.pi * k), gain=0.35, pan_sweep=True)   # barrido a blanco
-noise_sweep(6.75, 0.6, 300, 4500, lambda k: np.sin(np.pi * k), gain=0.3, pan_sweep=True)     # círculo
-noise_sweep(9.0, 0.6, 400, 6000, lambda k: k ** 1.5, gain=0.25)                               # hacia la marca
+noise_sweep(7.75, 0.75, 300, 4500, lambda k: np.sin(np.pi * k), gain=0.35, pan_sweep=True)   # barrido a blanco
+noise_sweep(10.35, 0.6, 300, 4500, lambda k: np.sin(np.pi * k), gain=0.3, pan_sweep=True)    # círculo
+noise_sweep(13.8, 0.6, 400, 6000, lambda k: k ** 1.5, gain=0.25)                              # hacia la marca
 
-# pastillas del CTA (8,4 / 8,7 / 9,0) y "tap" en Compartiendo (9,3): vocal chops
-for tk, m in [(8.4, 74), (8.7, 77), (9.0, 79), (9.3, 81)]:
+# pastillas del CTA (12,0 / 12,3 / 12,6) y "tap" en Compartiendo (12,9): vocal chops
+for tk, m in [(12.0, 74), (12.3, 77), (12.6, 79), (12.9, 81)]:
     add(vchop(m, 0.35, 'a'), tk, gain=0.36, rev=0.3, dly=0.3)
     add(pluck(m, 0.35), tk, gain=0.2, rev=0.2)
 
-# ---------------- 3) acorde final (12,0 – 13,0 s) ----------------
+# ---------------- 3) acorde final (18,0 – 19,0 s) ----------------
 n_end = DUR - FINAL
 add(stab(CH['F'] + [69, 72], n_end, 5000, 1.2), FINAL, gain=0.6, rev=0.5, pump=True)
 add(pad(CH['F'], n_end, 2500), FINAL, gain=0.25, rev=0.4)

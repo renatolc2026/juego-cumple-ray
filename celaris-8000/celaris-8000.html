@@ -354,7 +354,11 @@ html, body { width: 1080px; height: 1350px; overflow: hidden; background: #24083
 </div>
 
 <script>
-const DURATION = 13.0;
+// Tiempo extra de lectura por escena (medio compás de la música = 1,2 s).
+// O1..O5 son los desplazamientos acumulados después de cada escena.
+const HOLD = 1.2;
+const O1 = HOLD, O2 = 2 * HOLD, O3 = 3 * HOLD, O4 = 4 * HOLD, O5 = 5 * HOLD;
+const DURATION = 13.0 + O5;
 const $ = id => document.getElementById(id);
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const lerp = (a, b, k) => a + (b - a) * k;
@@ -403,7 +407,7 @@ for (let i = 0; i < 18; i++) {
 
 const fmt = n => String(Math.round(n));
 const RING_C = 2 * Math.PI * 430;
-const T_COUNT0 = 2.25, T_COUNT1 = 4.8;
+const T_COUNT0 = 2.25 + O1, T_COUNT1 = 4.8 + O1;
 
 function render(t) {
   // ---------- L1 fondo ----------
@@ -417,20 +421,20 @@ function render(t) {
 
   // ---------- Escena 1 ----------
   const pillIn = outBack(p(t, 0.05, 0.6));
-  const pillOut = Math.pow(p(t, 1.55, 0.35), 3);
+  const pillOut = Math.pow(p(t, 1.55 + O1, 0.35), 3);
   set($('s1pill'), { transform: `scale(${pillIn * (1 - pillOut)})`, transformOrigin: '0 50%', opacity: 1 - pillOut });
-  line($('s1l1'), t, 0.15, 1.6, 0.9, 0.42);
-  line($('s1l2'), t, 0.32, 1.66, 0.9, 0.42);
-  line($('s1l3'), t, 0.49, 1.72, 0.9, 0.42);
+  line($('s1l1'), t, 0.15, 1.6 + O1, 0.9, 0.42);
+  line($('s1l2'), t, 0.32, 1.66 + O1, 0.9, 0.42);
+  line($('s1l3'), t, 0.49, 1.72 + O1, 0.9, 0.42);
   // "más." se infla un poco antes de salir
   const pump = Math.sin(clamp(p(t, 1.15, 0.45)) * Math.PI) * 0.06;
   $('s1l3').style.transform += ` scale(${1 + pump})`;
   $('s1l3').style.transformOrigin = '0 80%';
-  $('s1').style.display = t > 2.5 ? 'none' : 'block';
+  $('s1').style.display = t > 2.5 + O1 ? 'none' : 'block';
 
   // ---------- Escena 2: anillo + contador ----------
-  const ringIn = outExpo(p(t, 2.08, 0.8));
-  const ringOut = inOutExpo(p(t, 5.3, 0.6));
+  const ringIn = outExpo(p(t, 2.08 + O1, 0.8));
+  const ringOut = inOutExpo(p(t, 5.3 + O2, 0.6));
   const ringScale = lerp(0.6, 1, ringIn) * lerp(1, 1.6, ringOut);
   const sceneOp = ringIn * (1 - ringOut);
   const svg = $('ringwrap');
@@ -452,9 +456,9 @@ function render(t) {
   const hit = p(t, T_COUNT1, 0.55);
   const punch = 1 + Math.sin(hit * Math.PI) * 0.12 * (1 - hit * 0.3);
   const cw = $('counterWrap');
-  const numIn = outExpo(p(t, 2.12, 0.7));
+  const numIn = outExpo(p(t, 2.12 + O1, 0.7));
   set($('num'), { transform: `scale(${lerp(0.7, 1, numIn) * punch})`, opacity: numIn });
-  set($('kicker'), { opacity: outCubic(p(t, 2.35, 0.6)), transform: `translateY(${lerp(30, 0, outExpo(p(t, 2.35, 0.8)))}px)` });
+  set($('kicker'), { opacity: outCubic(p(t, 2.35 + O1, 0.6)), transform: `translateY(${lerp(30, 0, outExpo(p(t, 2.35 + O1, 0.8)))}px)` });
   const segIn = outBack(p(t, T_COUNT1 + 0.1, 0.55), 2.2);
   set($('seg'), { transform: `scale(${segIn})`, opacity: clamp(segIn) });
   set(cw, { opacity: 1 - ringOut, transform: `scale(${lerp(1, 1.25, ringOut)})`, transformOrigin: '540px 675px' });
@@ -467,67 +471,67 @@ function render(t) {
   }
 
   // ---------- Transición L1 → L2 (barrido desde abajo) ----------
-  const w = inOutExpo(p(t, 5.5, 0.7));
+  const w = inOutExpo(p(t, 5.5 + O2, 0.7));
   const edge = lerp(1350 + 40, 0, w);           // borde superior del blanco
   $('L2').style.clipPath = `inset(${Math.max(0, edge)}px 0 0 0)`;
-  const bandW = inOutExpo(p(t, 5.43, 0.7));
+  const bandW = inOutExpo(p(t, 5.43 + O2, 0.7));
   const bandTop = lerp(1350 + 10, -36, bandW);
   set($('band'), { top: bandTop + 'px', display: bandW > 0 && bandW < 1 ? 'block' : 'none' });
 
   // ---------- Escena 3 ----------
-  set($('s3pill'), { transform: `scale(${outBack(p(t, 5.85, 0.55))})`, transformOrigin: '0 50%' });
-  line($('s3l1'), t, 5.95, 99);
-  line($('s3l2'), t, 6.1, 99);
-  set($('s3bar'), { width: lerp(0, 160, outExpo(p(t, 6.4, 0.8))) + 'px' });
-  const bc = outBack(p(t, 6.2, 0.8), 1.4);
+  set($('s3pill'), { transform: `scale(${outBack(p(t, 5.85 + O2, 0.55))})`, transformOrigin: '0 50%' });
+  line($('s3l1'), t, 5.95 + O2, 99);
+  line($('s3l2'), t, 6.1 + O2, 99);
+  set($('s3bar'), { width: lerp(0, 160, outExpo(p(t, 6.4 + O2, 0.8))) + 'px' });
+  const bc = outBack(p(t, 6.2 + O2, 0.8), 1.4);
   set($('bigCircle'), { transform: `scale(${bc})` });
-  const lg2 = p(t, 5.75, 0.5);
+  const lg2 = p(t, 5.75 + O2, 0.5);
   set($('logo2'), { opacity: lg2 });
 
   // ---------- Transición L2 → L3 (el círculo se abre) ----------
-  const c = inOutExpo(p(t, 6.85, 0.75));
+  const c = inOutExpo(p(t, 6.85 + O3, 0.75));
   const r = c <= 0 ? 0 : lerp(260, 1750, c);
   $('L3').style.clipPath = `circle(${r}px at 900px 1160px)`;
   $('L3').style.visibility = c > 0 ? 'visible' : 'hidden';
 
   // ---------- Escena 4: cierre ----------
-  set($('bloom3'), { opacity: inOutCubic(p(t, 7.2, 1.6)), transform: `scale(${lerp(1.4, 1, outCubic(p(t, 7.2, 1.8)))})`, transformOrigin: '100% 100%' });
-  line($('lead1'), t, 7.15, 99);
-  line($('lead2'), t, 7.27, 99);
-  set($('ebar'), { width: lerp(0, 120, outExpo(p(t, 7.6, 0.7))) + 'px' });
-  line($('e1'), t, 7.8, 99);
-  line($('e2'), t, 7.95, 99);
+  set($('bloom3'), { opacity: inOutCubic(p(t, 7.2 + O3, 1.6)), transform: `scale(${lerp(1.4, 1, outCubic(p(t, 7.2 + O3, 1.8)))})`, transformOrigin: '100% 100%' });
+  line($('lead1'), t, 7.15 + O3, 99);
+  line($('lead2'), t, 7.27 + O3, 99);
+  set($('ebar'), { width: lerp(0, 120, outExpo(p(t, 7.6 + O3, 0.7))) + 'px' });
+  line($('e1'), t, 7.8 + O3, 99);
+  line($('e2'), t, 7.95 + O3, 99);
   // Pastillas CTA: entran al ritmo (corcheas) con un "tap"
-  [[1, 8.40], [2, 8.70], [3, 9.00]].forEach(([i, t0]) => {
+  [[1, 8.40 + O3], [2, 8.70 + O3], [3, 9.00 + O3]].forEach(([i, t0]) => {
     const el = $('cta' + i);
     const k = outBack(p(t, t0, 0.5), 2.4);
-    const press = i === 3 ? 1 - Math.sin(clamp(p(t, 9.30, 0.28)) * Math.PI) * 0.1 : 1;
+    const press = i === 3 ? 1 - Math.sin(clamp(p(t, 9.30 + O3, 0.28)) * Math.PI) * 0.1 : 1;
     set(el, { transform: `translateY(${lerp(40, 0, outExpo(p(t, t0, 0.6)))}px) scale(${k * press})`, opacity: clamp(k * 1.5) });
     const rp = el.querySelector('.ripple');
-    const rr = p(t, i === 3 ? 9.30 : t0 + 0.12, 0.6);
+    const rr = p(t, i === 3 ? 9.30 + O3 : t0 + 0.12, 0.6);
     set(rp, { opacity: rr > 0 && rr < 1 ? (1 - rr) * 0.6 : 0, transform: `scale(${lerp(0.4, i === 3 ? 2.9 : 2.3, outExpo(rr))})` });
   });
 
   // ---------- Transición L3 → L4 (barrido desde la izquierda) ----------
-  const w4 = inOutExpo(p(t, 9.45, 0.6));
+  const w4 = inOutExpo(p(t, 9.45 + O4, 0.6));
   $('L4').style.visibility = w4 > 0 ? 'visible' : 'hidden';
   $('L4').style.clipPath = `inset(0 ${(1 - w4) * 100}% 0 0)`;
 
   // ---------- Escena 5: cierre de marca "Enciende tu poder" ----------
-  line($('b1'), t, 9.8, 99, 1.0);
-  line($('b2'), t, 9.95, 99, 1.0);
-  set($('bar4'), { width: lerp(0, 150, outExpo(p(t, 10.25, 0.8))) + 'px' });
-  const pulse = 1 + Math.sin(p(t, 12.0, 0.45) * Math.PI) * 0.035;
-  set($('brandWrap'), { transform: `scale(${lerp(1, 1.035, p(t, 9.6, 3.4)) * pulse})`, transformOrigin: '540px 575px' });
-  set($('logo4'), { opacity: outCubic(p(t, 10.35, 0.6)), transform: `translateY(${lerp(30, 0, outExpo(p(t, 10.35, 0.9)))}px)` });
-  set($('site4'), { opacity: 0.85 * outCubic(p(t, 10.6, 0.6)) });
+  line($('b1'), t, 9.8 + O4, 99, 1.0);
+  line($('b2'), t, 9.95 + O4, 99, 1.0);
+  set($('bar4'), { width: lerp(0, 150, outExpo(p(t, 10.25 + O4, 0.8))) + 'px' });
+  const pulse = 1 + Math.sin(p(t, 12.0 + O5, 0.45) * Math.PI) * 0.035;
+  set($('brandWrap'), { transform: `scale(${lerp(1, 1.035, p(t, 9.6 + O4, 3.4 + HOLD)) * pulse})`, transformOrigin: '540px 575px' });
+  set($('logo4'), { opacity: outCubic(p(t, 10.35 + O4, 0.6)), transform: `translateY(${lerp(30, 0, outExpo(p(t, 10.35 + O4, 0.9)))}px)` });
+  set($('site4'), { opacity: 0.85 * outCubic(p(t, 10.6 + O4, 0.6)) });
   // anillos de energía al "encender" (9,85) y en el acorde final (12,0)
-  [['rg1', 9.85], ['rg2', 10.0], ['rg3', 12.0], ['rg4', 12.12]].forEach(([id, t0]) => {
+  [['rg1', 9.85 + O4], ['rg2', 10.0 + O4], ['rg3', 12.0 + O5], ['rg4', 12.12 + O5]].forEach(([id, t0]) => {
     const q = p(t, t0, 1.3);
     $(id).setAttribute('r', lerp(160, 760, outExpo(q)));
     $(id).setAttribute('stroke-opacity', q > 0 && q < 1 ? (1 - q) * (id === 'rg3' ? 0.8 : 0.4) : 0);
   });
-  set($('logo3'), { opacity: outCubic(p(t, 7.1, 0.5)) });
+  set($('logo3'), { opacity: outCubic(p(t, 7.1 + O3, 0.5)) });
 }
 
 window.render = render;
