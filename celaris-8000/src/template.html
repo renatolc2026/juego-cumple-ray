@@ -49,9 +49,9 @@ html, body { width: 1080px; height: 1350px; overflow: hidden; background: #24083
 #L3 { background: linear-gradient(135deg, #24083e 0%, #653bec 100%); color: #fff; }
 #endWrap { left: 0; top: -40px; width: 1080px; height: 1350px; display: flex; flex-direction: column;
   align-items: center; justify-content: center; text-align: center; }
-#endWrap .line { font-size: 150px; font-weight: 800; line-height: 1.02; letter-spacing: -0.035em; }
+#endWrap .line { font-size: 116px; font-weight: 800; line-height: 1.02; letter-spacing: -0.035em; }
 #endWrap .cel-bar { margin: 40px 0 34px; width: 120px; height: 10px; border-radius: 5px; }
-#ctaLead { font-size: 48px; font-weight: 500; line-height: 1.22; letter-spacing: -0.01em; }
+#ctaLead { font-size: 60px; font-weight: 600; line-height: 1.22; letter-spacing: -0.01em; }
 #ctas { margin-top: 46px; display: flex; gap: 18px; justify-content: center; }
 .cta { position: relative; font-size: 28px; padding: 14px 28px 14px 14px; gap: 12px; }
 .cta .ico { width: 50px; height: 50px; border-radius: 50%; background: #fff; display: inline-flex;
@@ -61,9 +61,15 @@ html, body { width: 1080px; height: 1350px; overflow: hidden; background: #24083
 .cta.cel-pill--outline { border-width: 3px; }
 .ripple { position: absolute; left: 50%; top: 50%; width: 80px; height: 80px; margin: -40px 0 0 -40px;
   border-radius: 50%; border: 3px solid #fff; opacity: 0; pointer-events: none; }
-.foot { position: absolute; bottom: 54px; font-size: 26px; }
-#footL { left: 54px; font-weight: 500; }
-#footR { right: 54px; font-weight: 700; }
+/* L4 — cierre de marca */
+#L4 { background: var(--cel-morado); color: #fff; visibility: hidden; }
+#brandWrap { left: 0; top: 0; width: 1080px; height: 1150px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center; }
+#brandWrap .line { font-size: 178px; font-weight: 800; line-height: 1.0; letter-spacing: -0.04em; }
+#bar4 { margin-top: 46px; width: 0; height: 12px; border-radius: 6px; }
+#logo4 { left: 350px; top: 1060px; width: 380px; height: auto; }
+#site4 { left: 0; width: 1080px; bottom: 54px; text-align: center; font-size: 26px; font-weight: 500; opacity: .85; }
+#rings4 { left: 0; top: 0; width: 1080px; height: 1350px; }
 
 .logo { left: 54px; top: 54px; width: 230px; height: auto; }
 .tag { position: absolute; left: 54px; bottom: 54px; font-size: 22px; font-weight: 500; opacity: .8; }
@@ -134,14 +140,30 @@ html, body { width: 1080px; height: 1350px; overflow: hidden; background: #24083
         <span class="cel-pill cel-pill--acento cta" id="cta3"><span class="ico"><svg viewBox="0 0 24 24" style="stroke:#e38a22"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></svg></span>Compartiendo<i class="ripple"></i></span>
       </div>
     </div>
-    <div class="foot" id="footL">celarisenergy.pe</div>
-    <div class="foot" id="footR">Enciende tu poder</div>
     <img class="abs logo" id="logo3" src="data:image/png;base64,/*__LOGO_BLANCO__*/" alt="Celaris Energy">
+  </div>
+
+  <!-- ============ L4: cierre de marca ============ -->
+  <div class="layer" id="L4">
+    <div class="cel-texture-dots" style="color:#fff;opacity:.06"></div>
+    <svg class="abs" id="rings4" viewBox="0 0 1080 1350">
+      <circle id="rg1" cx="540" cy="575" r="0" fill="none" stroke="#fff" stroke-width="3"/>
+      <circle id="rg2" cx="540" cy="575" r="0" fill="none" stroke="#fff" stroke-width="3"/>
+      <circle id="rg3" cx="540" cy="575" r="0" fill="none" stroke="#e38a22" stroke-width="4"/>
+      <circle id="rg4" cx="540" cy="575" r="0" fill="none" stroke="#fff" stroke-width="3"/>
+    </svg>
+    <div class="abs" id="brandWrap">
+      <div class="mask line"><span id="b1">Enciende</span></div>
+      <div class="mask line"><span id="b2">tu poder</span></div>
+      <div class="cel-bar" id="bar4"></div>
+    </div>
+    <img class="abs" id="logo4" src="data:image/png;base64,/*__LOGO_BLANCO__*/" alt="Celaris Energy">
+    <div class="abs" id="site4">celarisenergy.pe</div>
   </div>
 </div>
 
 <script>
-const DURATION = 10.0;
+const DURATION = 13.0;
 const $ = id => document.getElementById(id);
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const lerp = (a, b, k) => a + (b - a) * k;
@@ -288,15 +310,32 @@ function render(t) {
   [[1, 8.40], [2, 8.70], [3, 9.00]].forEach(([i, t0]) => {
     const el = $('cta' + i);
     const k = outBack(p(t, t0, 0.5), 2.4);
-    const press = i === 3 ? 1 - Math.sin(clamp(p(t, 9.60, 0.28)) * Math.PI) * 0.1 : 1;
+    const press = i === 3 ? 1 - Math.sin(clamp(p(t, 9.30, 0.28)) * Math.PI) * 0.1 : 1;
     set(el, { transform: `translateY(${lerp(40, 0, outExpo(p(t, t0, 0.6)))}px) scale(${k * press})`, opacity: clamp(k * 1.5) });
     const rp = el.querySelector('.ripple');
-    const rr = p(t, i === 3 ? 9.60 : t0 + 0.12, 0.6);
+    const rr = p(t, i === 3 ? 9.30 : t0 + 0.12, 0.6);
     set(rp, { opacity: rr > 0 && rr < 1 ? (1 - rr) * 0.6 : 0, transform: `scale(${lerp(0.4, i === 3 ? 2.9 : 2.3, outExpo(rr))})` });
   });
-  const fo = outCubic(p(t, 9.0, 0.6));
-  set($('footL'), { opacity: fo });
-  set($('footR'), { opacity: fo });
+
+  // ---------- Transición L3 → L4 (barrido desde la izquierda) ----------
+  const w4 = inOutExpo(p(t, 9.45, 0.6));
+  $('L4').style.visibility = w4 > 0 ? 'visible' : 'hidden';
+  $('L4').style.clipPath = `inset(0 ${(1 - w4) * 100}% 0 0)`;
+
+  // ---------- Escena 5: cierre de marca "Enciende tu poder" ----------
+  line($('b1'), t, 9.8, 99, 1.0);
+  line($('b2'), t, 9.95, 99, 1.0);
+  set($('bar4'), { width: lerp(0, 150, outExpo(p(t, 10.25, 0.8))) + 'px' });
+  const pulse = 1 + Math.sin(p(t, 12.0, 0.45) * Math.PI) * 0.035;
+  set($('brandWrap'), { transform: `scale(${lerp(1, 1.035, p(t, 9.6, 3.4)) * pulse})`, transformOrigin: '540px 575px' });
+  set($('logo4'), { opacity: outCubic(p(t, 10.35, 0.6)), transform: `translateY(${lerp(30, 0, outExpo(p(t, 10.35, 0.9)))}px)` });
+  set($('site4'), { opacity: 0.85 * outCubic(p(t, 10.6, 0.6)) });
+  // anillos de energía al "encender" (9,85) y en el acorde final (12,0)
+  [['rg1', 9.85], ['rg2', 10.0], ['rg3', 12.0], ['rg4', 12.12]].forEach(([id, t0]) => {
+    const q = p(t, t0, 1.3);
+    $(id).setAttribute('r', lerp(160, 760, outExpo(q)));
+    $(id).setAttribute('stroke-opacity', q > 0 && q < 1 ? (1 - q) * (id === 'rg3' ? 0.8 : 0.4) : 0);
+  });
   set($('logo3'), { opacity: outCubic(p(t, 7.1, 0.5)) });
 }
 
