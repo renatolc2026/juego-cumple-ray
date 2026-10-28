@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Celaris 8000 seguidores</title>
+<style>
+/*__CELARIS_CSS__*/
+@font-face {
+  font-family: 'Lexend'; font-style: normal; font-weight: 100 900;
+  src: url(data:font/woff2;base64,/*__LEXEND_B64__*/) format('woff2');
+}
+html, body { width: 1080px; height: 1350px; overflow: hidden; background: #24083e; }
+#stage { position: relative; width: 1080px; height: 1350px; overflow: hidden; }
+.layer { position: absolute; inset: 0; overflow: hidden; }
+.abs { position: absolute; }
+.mask { overflow: hidden; display: block; padding: 0 0 0.06em; }
+.mask > span { display: inline-block; will-change: transform; }
+
+/* L1 — escena oscura (degradado principal) */
+#L1 { background: linear-gradient(135deg, #24083e 0%, #653bec 100%); color: #fff; }
+.bloom { position: absolute; inset: 0;
+  background: radial-gradient(circle at 100% 100%, #e38a22 0%, rgba(227,138,34,0) 45%); }
+#L1 .cel-texture-dots { color: #fff; opacity: 0.07; }
+
+.s1 { left: 54px; top: 380px; }
+.s1 .line { font-size: 176px; font-weight: 800; line-height: 1.0; letter-spacing: -0.035em; }
+.s1 .pill-wrap { margin-bottom: 34px; }
+.cel-pill.big { font-size: 26px; padding: 14px 30px; }
+
+#ringwrap { left: 0; top: 0; width: 1080px; height: 1350px; }
+#counterWrap { left: 0; width: 1080px; top: 0; height: 1350px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; }
+#kicker { font-size: 36px; font-weight: 500; letter-spacing: 0.02em; margin-bottom: 4px; }
+#num { font-size: 230px; font-weight: 800; letter-spacing: -0.045em; line-height: 1;
+  font-variant-numeric: tabular-nums; }
+#seg { margin-top: 26px; font-size: 34px; padding: 16px 40px; }
+
+/* L2 — escena blanca */
+#L2 { background: #fff; color: var(--cel-morado); }
+.s3 { left: 54px; top: 300px; }
+.s3 .line { font-size: 118px; font-weight: 700; line-height: 1.04; letter-spacing: -0.03em; }
+.s3 .cel-bar { margin-top: 48px; height: 10px; border-radius: 5px; }
+#bigCircle { width: 520px; height: 520px; border-radius: 50%; background: var(--cel-morado);
+  left: 640px; top: 900px; display: flex; align-items: center; justify-content: center; color: #fff; }
+#bigCircle span { font-size: 120px; font-weight: 800; letter-spacing: -0.04em;
+  transform: translate(-70px, -80px); }
+
+/* L3 — cierre */
+#L3 { background: linear-gradient(135deg, #24083e 0%, #653bec 100%); color: #fff; }
+#endWrap { left: 0; top: 0; width: 1080px; height: 1350px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center; }
+#endWrap .line { font-size: 132px; font-weight: 800; line-height: 1.02; letter-spacing: -0.035em; }
+#endWrap .cel-bar { margin-top: 44px; width: 120px; height: 10px; border-radius: 5px; }
+#web { margin-top: 56px; font-size: 28px; padding: 14px 34px; }
+
+.logo { left: 54px; top: 54px; width: 230px; height: auto; }
+.tag { position: absolute; left: 54px; bottom: 54px; font-size: 22px; font-weight: 500; opacity: .8; }
+
+.dot { position: absolute; border-radius: 50%; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- ============ L1 ============ -->
+  <div class="layer" id="L1">
+    <div class="bloom" id="bloom1"></div>
+    <div class="cel-texture-dots" id="tex1"></div>
+    <div id="particles"></div>
+
+    <!-- Escena 1: "Cada vez somos más." -->
+    <div class="abs s1" id="s1">
+      <div class="pill-wrap"><span class="cel-pill cel-pill--outline big" id="s1pill">Comunidad Celaris</span></div>
+      <div class="mask line"><span id="s1l1">Cada vez</span></div>
+      <div class="mask line"><span id="s1l2">somos</span></div>
+      <div class="mask line"><span id="s1l3">más.</span></div>
+    </div>
+
+    <!-- Escena 2: contador -->
+    <svg class="abs" id="ringwrap" viewBox="0 0 1080 1350">
+      <circle id="ringTrack" cx="540" cy="675" r="430" fill="none" stroke="#fff" stroke-opacity="0.14" stroke-width="10"/>
+      <circle id="ring" cx="540" cy="675" r="430" fill="none" stroke="#fff" stroke-width="10"
+              stroke-linecap="round" transform="rotate(-90 540 675)"/>
+      <circle id="ringHead" cx="540" cy="245" r="16" fill="#e38a22"/>
+      <circle id="shock" cx="540" cy="675" r="430" fill="none" stroke="#fff" stroke-width="4"/>
+    </svg>
+    <div class="abs" id="counterWrap">
+      <div id="kicker">Alcanzamos</div>
+      <div id="num">0</div>
+      <span class="cel-pill cel-pill--acento" id="seg">seguidores</span>
+    </div>
+    <div id="burst"></div>
+
+    <img class="abs logo" id="logo1" src="data:image/png;base64,/*__LOGO_BLANCO__*/" alt="Celaris Energy">
+  </div>
+
+  <!-- ============ L2 ============ -->
+  <div class="layer" id="L2">
+    <div class="abs" id="bigCircle"><span id="bigCircleTxt">8K</span></div>
+    <div class="abs s3" id="s3">
+      <div class="mask line"><span id="s3l1">Gracias por</span></div>
+      <div class="mask line"><span id="s3l2">ser parte de</span></div>
+      <div class="mask line"><span id="s3l3">esta energía.</span></div>
+      <div class="cel-bar" id="s3bar"></div>
+    </div>
+    <img class="abs logo" id="logo2" src="data:image/png;base64,/*__LOGO_MORADO__*/" alt="Celaris Energy">
+  </div>
+  <div class="abs" id="band" style="left:0;width:1080px;height:36px;background:#e38a22;"></div>
+
+  <!-- ============ L3 ============ -->
+  <div class="layer" id="L3">
+    <div class="bloom" id="bloom3"></div>
+    <div class="cel-texture-dots" style="color:#fff;opacity:.07"></div>
+    <div class="abs" id="endWrap">
+      <div class="mask line"><span id="e1">Enciende</span></div>
+      <div class="mask line"><span id="e2">tu poder</span></div>
+      <div class="cel-bar" id="ebar"></div>
+      <span class="cel-pill cel-pill--outline" id="web">celarisenergy.pe</span>
+    </div>
+    <img class="abs logo" id="logo3" src="data:image/png;base64,/*__LOGO_BLANCO__*/" alt="Celaris Energy">
+  </div>
+</div>
+
+<script>
+const DURATION = 9.5;
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const p = (t, start, dur) => clamp((t - start) / dur);
+const outExpo = k => k >= 1 ? 1 : 1 - Math.pow(2, -10 * k);
+const inExpo = k => k <= 0 ? 0 : Math.pow(2, 10 * k - 10);
+const inOutExpo = k => k <= 0 ? 0 : k >= 1 ? 1 : k < .5 ? Math.pow(2, 20 * k - 10) / 2 : (2 - Math.pow(2, -20 * k + 10)) / 2;
+const outCubic = k => 1 - Math.pow(1 - k, 3);
+const inOutCubic = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+const outQuart = k => 1 - Math.pow(1 - k, 4);
+const outBack = (k, s = 1.70158) => 1 + (s + 1) * Math.pow(k - 1, 3) + s * Math.pow(k - 1, 2);
+const set = (el, props) => Object.assign(el.style, props);
+
+// Línea enmascarada: entra desde abajo y sale hacia arriba.
+function line(el, t, tin, tout, dIn = 0.9, dOut = 0.5) {
+  const a = outExpo(p(t, tin, dIn));
+  const b = Math.pow(p(t, tout, dOut), 3);
+  const y = lerp(110, 0, a) - 115 * b;
+  set(el, { transform: `translateY(${y}%) skewY(${(1 - a) * 6}deg)` });
+}
+
+// Partículas de energía (determinísticas)
+function rand(seed) { let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+const R = rand(42);
+const parts = [];
+for (let i = 0; i < 26; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot';
+  const size = 4 + R() * 10;
+  parts.push({ el: d, x: R() * 1080, y0: R() * 1350, v: 40 + R() * 90, size, o: .12 + R() * .3, ph: R() * 6.28 });
+  set(d, { width: size + 'px', height: size + 'px', background: '#fff' });
+  $('particles').appendChild(d);
+}
+// Ráfaga al llegar a 8,000
+const bursts = [];
+for (let i = 0; i < 18; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot';
+  const ang = (i / 18) * Math.PI * 2 + R() * 0.2;
+  const size = 10 + R() * 16;
+  const orange = i % 6 === 0;
+  bursts.push({ el: d, ang, dist: 470 + R() * 220, size });
+  set(d, { width: size + 'px', height: size + 'px', background: orange ? '#e38a22' : '#fff' });
+  $('burst').appendChild(d);
+}
+
+const fmt = n => Math.round(n).toLocaleString('en-US');
+const RING_C = 2 * Math.PI * 430;
+const T_COUNT0 = 2.25, T_COUNT1 = 4.8;
+
+function render(t) {
+  // ---------- L1 fondo ----------
+  set($('bloom1'), { opacity: lerp(0.35, 1, inOutCubic(p(t, 0, 5))), transform: `scale(${lerp(1.25, 1, outCubic(p(t, 0, 6)))})`, transformOrigin: '100% 100%' });
+  set($('tex1'), { backgroundPosition: `${t * 8}px ${-t * 14}px` });
+  for (const q of parts) {
+    const y = ((q.y0 - q.v * t) % 1350 + 1350) % 1350;
+    set(q.el, { left: (q.x + Math.sin(t * 1.3 + q.ph) * 14) + 'px', top: y + 'px', opacity: q.o * (0.5 + 0.5 * Math.sin(t * 2 + q.ph)) });
+  }
+  set($('logo1'), { opacity: outCubic(p(t, 0.1, 0.6)), transform: `translateY(${lerp(-20, 0, outExpo(p(t, 0.1, 0.8)))}px)` });
+
+  // ---------- Escena 1 ----------
+  const pillIn = outBack(p(t, 0.05, 0.6));
+  const pillOut = Math.pow(p(t, 1.55, 0.35), 3);
+  set($('s1pill'), { transform: `scale(${pillIn * (1 - pillOut)})`, transformOrigin: '0 50%', opacity: 1 - pillOut });
+  line($('s1l1'), t, 0.15, 1.6, 0.9, 0.42);
+  line($('s1l2'), t, 0.32, 1.66, 0.9, 0.42);
+  line($('s1l3'), t, 0.49, 1.72, 0.9, 0.42);
+  // "más." se infla un poco antes de salir
+  const pump = Math.sin(clamp(p(t, 1.15, 0.45)) * Math.PI) * 0.06;
+  $('s1l3').style.transform += ` scale(${1 + pump})`;
+  $('s1l3').style.transformOrigin = '0 80%';
+  $('s1').style.display = t > 2.5 ? 'none' : 'block';
+
+  // ---------- Escena 2: anillo + contador ----------
+  const ringIn = outExpo(p(t, 2.08, 0.8));
+  const ringOut = inOutExpo(p(t, 5.55, 0.6));
+  const ringScale = lerp(0.6, 1, ringIn) * lerp(1, 1.6, ringOut);
+  const sceneOp = ringIn * (1 - ringOut);
+  const svg = $('ringwrap');
+  set(svg, { opacity: sceneOp, transform: `scale(${ringScale}) rotate(${lerp(-30, 0, ringIn)}deg)`, transformOrigin: '540px 675px' });
+  const k = inOutCubic(p(t, T_COUNT0, T_COUNT1 - T_COUNT0));
+  $('ring').setAttribute('stroke-dasharray', RING_C);
+  $('ring').setAttribute('stroke-dashoffset', RING_C * (1 - k));
+  const ang = -Math.PI / 2 + k * Math.PI * 2;
+  $('ringHead').setAttribute('cx', 540 + 430 * Math.cos(ang));
+  $('ringHead').setAttribute('cy', 675 + 430 * Math.sin(ang));
+  $('ringHead').setAttribute('r', 16 * (1 - p(t, T_COUNT1, 0.3)));
+  const sh = p(t, T_COUNT1, 0.9);
+  $('shock').setAttribute('r', 430 + outExpo(sh) * 260);
+  $('shock').setAttribute('stroke-opacity', sh > 0 ? (1 - sh) * 0.7 : 0);
+  $('shock').setAttribute('stroke-width', 4 + 30 * (1 - sh));
+
+  const cnt = outQuart(p(t, T_COUNT0, T_COUNT1 - T_COUNT0));
+  $('num').textContent = fmt(8000 * cnt);
+  const hit = p(t, T_COUNT1, 0.55);
+  const punch = 1 + Math.sin(hit * Math.PI) * 0.12 * (1 - hit * 0.3);
+  const cw = $('counterWrap');
+  const numIn = outExpo(p(t, 2.12, 0.7));
+  set($('num'), { transform: `scale(${lerp(0.7, 1, numIn) * punch})`, opacity: numIn });
+  set($('kicker'), { opacity: outCubic(p(t, 2.35, 0.6)), transform: `translateY(${lerp(30, 0, outExpo(p(t, 2.35, 0.8)))}px)` });
+  const segIn = outBack(p(t, T_COUNT1 + 0.1, 0.55), 2.2);
+  set($('seg'), { transform: `scale(${segIn})`, opacity: clamp(segIn) });
+  set(cw, { opacity: 1 - ringOut, transform: `scale(${lerp(1, 1.25, ringOut)})`, transformOrigin: '540px 675px' });
+
+  for (const b of bursts) {
+    const q = p(t, T_COUNT1, 1.1);
+    const d = lerp(430, b.dist, outExpo(q));
+    set(b.el, { left: (540 + Math.cos(b.ang) * d - b.size / 2) + 'px', top: (675 + Math.sin(b.ang) * d - b.size / 2) + 'px',
+      opacity: q > 0 && q < 1 ? 1 - q : 0, transform: `scale(${1 - q * 0.6})` });
+  }
+
+  // ---------- Transición L1 → L2 (barrido desde abajo) ----------
+  const w = inOutExpo(p(t, 5.75, 0.75));
+  const edge = lerp(1350 + 40, 0, w);           // borde superior del blanco
+  $('L2').style.clipPath = `inset(${Math.max(0, edge)}px 0 0 0)`;
+  const bandW = inOutExpo(p(t, 5.68, 0.75));
+  const bandTop = lerp(1350 + 10, -36, bandW);
+  set($('band'), { top: bandTop + 'px', display: bandW > 0 && bandW < 1 ? 'block' : 'none' });
+
+  // ---------- Escena 3 ----------
+  line($('s3l1'), t, 6.2, 99);
+  line($('s3l2'), t, 6.33, 99);
+  line($('s3l3'), t, 6.46, 99);
+  set($('s3bar'), { width: lerp(0, 160, outExpo(p(t, 6.9, 0.8))) + 'px' });
+  const bc = outBack(p(t, 6.5, 0.8), 1.4);
+  set($('bigCircle'), { transform: `scale(${bc})` });
+  set($('bigCircleTxt'), { opacity: outCubic(p(t, 6.8, 0.4)) });
+  const lg2 = p(t, 6.0, 0.5);
+  set($('logo2'), { opacity: lg2 });
+
+  // ---------- Transición L2 → L3 (el círculo se abre) ----------
+  const c = inOutExpo(p(t, 7.85, 0.85));
+  const r = c <= 0 ? 0 : lerp(260, 1750, c);
+  $('L3').style.clipPath = `circle(${r}px at 900px 1160px)`;
+  $('L3').style.visibility = c > 0 ? 'visible' : 'hidden';
+
+  // ---------- Escena 4: cierre ----------
+  set($('bloom3'), { opacity: inOutCubic(p(t, 8.1, 1.2)), transform: `scale(${lerp(1.4, 1, outCubic(p(t, 8.1, 1.4)))})`, transformOrigin: '100% 100%' });
+  line($('e1'), t, 8.2, 99);
+  line($('e2'), t, 8.34, 99);
+  set($('ebar'), { width: lerp(0, 120, outExpo(p(t, 8.6, 0.7))) + 'px' });
+  const wIn = outBack(p(t, 8.7, 0.6));
+  set($('web'), { transform: `scale(${wIn})`, opacity: clamp(wIn) });
+  set($('logo3'), { opacity: outCubic(p(t, 8.3, 0.5)) });
+}
+
+window.render = render;
+window.DURATION = DURATION;
+// Vista previa en navegador (no se usa al renderizar)
+if (!location.hash.includes('render')) {
+  let t0 = null;
+  const loop = ts => { if (t0 === null) t0 = ts; render(((ts - t0) / 1000) % (DURATION + 1)); requestAnimationFrame(loop); };
+  document.fonts.ready.then(() => requestAnimationFrame(loop));
+} else { render(0); }
+</script>
+</body>
+</html>
