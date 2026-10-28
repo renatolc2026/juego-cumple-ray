@@ -31,27 +31,39 @@ html, body { width: 1080px; height: 1350px; overflow: hidden; background: #24083
 #counterWrap { left: 0; width: 1080px; top: 0; height: 1350px; display: flex; flex-direction: column;
   align-items: center; justify-content: center; }
 #kicker { font-size: 36px; font-weight: 500; letter-spacing: 0.02em; margin-bottom: 4px; }
-#num { font-size: 230px; font-weight: 800; letter-spacing: -0.045em; line-height: 1;
+#num { font-size: 270px; font-weight: 800; letter-spacing: -0.045em; line-height: 1;
   font-variant-numeric: tabular-nums; }
-#seg { margin-top: 26px; font-size: 34px; padding: 16px 40px; }
+#seg { margin-top: 30px; font-size: 36px; padding: 16px 42px; }
 
 /* L2 — escena blanca */
 #L2 { background: #fff; color: var(--cel-morado); }
-.s3 { left: 54px; top: 300px; }
-.s3 .line { font-size: 118px; font-weight: 700; line-height: 1.04; letter-spacing: -0.03em; }
-.s3 .cel-bar { margin-top: 48px; height: 10px; border-radius: 5px; }
+.s3 { left: 54px; top: 360px; }
+.s3 .pill-wrap { margin-bottom: 30px; }
+.s3 .line { font-size: 146px; font-weight: 800; line-height: 1.0; letter-spacing: -0.035em; }
+.s3 .cel-bar { margin-top: 44px; height: 10px; border-radius: 5px; }
 #bigCircle { width: 520px; height: 520px; border-radius: 50%; background: var(--cel-morado);
   left: 640px; top: 900px; display: flex; align-items: center; justify-content: center; color: #fff; }
-#bigCircle span { font-size: 120px; font-weight: 800; letter-spacing: -0.04em;
-  transform: translate(-70px, -80px); }
+
 
 /* L3 — cierre */
 #L3 { background: linear-gradient(135deg, #24083e 0%, #653bec 100%); color: #fff; }
-#endWrap { left: 0; top: 0; width: 1080px; height: 1350px; display: flex; flex-direction: column;
+#endWrap { left: 0; top: -40px; width: 1080px; height: 1350px; display: flex; flex-direction: column;
   align-items: center; justify-content: center; text-align: center; }
-#endWrap .line { font-size: 132px; font-weight: 800; line-height: 1.02; letter-spacing: -0.035em; }
-#endWrap .cel-bar { margin-top: 44px; width: 120px; height: 10px; border-radius: 5px; }
-#web { margin-top: 56px; font-size: 28px; padding: 14px 34px; }
+#endWrap .line { font-size: 138px; font-weight: 800; line-height: 1.02; letter-spacing: -0.035em; }
+#endWrap .cel-bar { margin-top: 40px; width: 120px; height: 10px; border-radius: 5px; }
+#ctaLead { margin-top: 44px; font-size: 34px; font-weight: 400; opacity: .92; }
+#ctas { margin-top: 30px; display: flex; gap: 18px; justify-content: center; }
+.cta { position: relative; font-size: 30px; padding: 16px 30px 16px 18px; gap: 14px; }
+.cta .ico { width: 50px; height: 50px; border-radius: 50%; background: #fff; display: inline-flex;
+  align-items: center; justify-content: center; flex: none; }
+.cta .ico svg { width: 28px; height: 28px; fill: none; stroke: var(--cel-morado); stroke-width: 2.2;
+  stroke-linecap: round; stroke-linejoin: round; }
+.cta.cel-pill--outline { border-width: 3px; }
+.ripple { position: absolute; left: 50%; top: 50%; width: 80px; height: 80px; margin: -40px 0 0 -40px;
+  border-radius: 50%; border: 3px solid #fff; opacity: 0; pointer-events: none; }
+.foot { position: absolute; bottom: 54px; font-size: 26px; }
+#footL { left: 54px; font-weight: 500; }
+#footR { right: 54px; font-weight: 700; }
 
 .logo { left: 54px; top: 54px; width: 230px; height: auto; }
 .tag { position: absolute; left: 54px; bottom: 54px; font-size: 22px; font-weight: 500; opacity: .8; }
@@ -70,7 +82,7 @@ html, body { width: 1080px; height: 1350px; overflow: hidden; background: #24083
 
     <!-- Escena 1: "Cada vez somos más." -->
     <div class="abs s1" id="s1">
-      <div class="pill-wrap"><span class="cel-pill cel-pill--outline big" id="s1pill">Comunidad Celaris</span></div>
+      <div class="pill-wrap"><span class="cel-pill cel-pill--outline big" id="s1pill">Comunidad Celaris Energy</span></div>
       <div class="mask line"><span id="s1l1">Cada vez</span></div>
       <div class="mask line"><span id="s1l2">somos</span></div>
       <div class="mask line"><span id="s1l3">más.</span></div>
@@ -87,7 +99,7 @@ html, body { width: 1080px; height: 1350px; overflow: hidden; background: #24083
     <div class="abs" id="counterWrap">
       <div id="kicker">Alcanzamos</div>
       <div id="num">0</div>
-      <span class="cel-pill cel-pill--acento" id="seg">seguidores</span>
+      <span class="cel-pill cel-pill--acento" id="seg">Seguidores en LinkedIn</span>
     </div>
     <div id="burst"></div>
 
@@ -96,11 +108,11 @@ html, body { width: 1080px; height: 1350px; overflow: hidden; background: #24083
 
   <!-- ============ L2 ============ -->
   <div class="layer" id="L2">
-    <div class="abs" id="bigCircle"><span id="bigCircleTxt">8K</span></div>
+    <div class="abs" id="bigCircle"></div>
     <div class="abs s3" id="s3">
-      <div class="mask line"><span id="s3l1">Gracias por</span></div>
-      <div class="mask line"><span id="s3l2">ser parte de</span></div>
-      <div class="mask line"><span id="s3l3">esta energía.</span></div>
+      <div class="pill-wrap"><span class="cel-pill big" id="s3pill">Gracias, equipo</span></div>
+      <div class="mask line"><span id="s3l1">Lo logramos</span></div>
+      <div class="mask line"><span id="s3l2">juntos.</span></div>
       <div class="cel-bar" id="s3bar"></div>
     </div>
     <img class="abs logo" id="logo2" src="data:image/png;base64,/*__LOGO_MORADO__*/" alt="Celaris Energy">
@@ -112,17 +124,24 @@ html, body { width: 1080px; height: 1350px; overflow: hidden; background: #24083
     <div class="bloom" id="bloom3"></div>
     <div class="cel-texture-dots" style="color:#fff;opacity:.07"></div>
     <div class="abs" id="endWrap">
-      <div class="mask line"><span id="e1">Enciende</span></div>
-      <div class="mask line"><span id="e2">tu poder</span></div>
+      <div class="mask line"><span id="e1">¡Sigamos</span></div>
+      <div class="mask line"><span id="e2">creciendo!</span></div>
       <div class="cel-bar" id="ebar"></div>
-      <span class="cel-pill cel-pill--outline" id="web">celarisenergy.pe</span>
+      <div id="ctaLead">Cada interacción lleva nuestra energía más lejos</div>
+      <div id="ctas">
+        <span class="cel-pill cel-pill--outline cta" id="cta1"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg></span>Dale like<i class="ripple"></i></span>
+        <span class="cel-pill cel-pill--outline cta" id="cta2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></span>Comenta<i class="ripple"></i></span>
+        <span class="cel-pill cel-pill--acento cta" id="cta3"><span class="ico"><svg viewBox="0 0 24 24" style="stroke:#e38a22"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></svg></span>Comparte<i class="ripple"></i></span>
+      </div>
     </div>
+    <div class="foot" id="footL">celarisenergy.pe</div>
+    <div class="foot" id="footR">Enciende tu poder</div>
     <img class="abs logo" id="logo3" src="data:image/png;base64,/*__LOGO_BLANCO__*/" alt="Celaris Energy">
   </div>
 </div>
 
 <script>
-const DURATION = 9.5;
+const DURATION = 10.0;
 const $ = id => document.getElementById(id);
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const lerp = (a, b, k) => a + (b - a) * k;
@@ -169,7 +188,7 @@ for (let i = 0; i < 18; i++) {
   $('burst').appendChild(d);
 }
 
-const fmt = n => Math.round(n).toLocaleString('en-US');
+const fmt = n => String(Math.round(n));
 const RING_C = 2 * Math.PI * 430;
 const T_COUNT0 = 2.25, T_COUNT1 = 4.8;
 
@@ -243,30 +262,41 @@ function render(t) {
   set($('band'), { top: bandTop + 'px', display: bandW > 0 && bandW < 1 ? 'block' : 'none' });
 
   // ---------- Escena 3 ----------
-  line($('s3l1'), t, 6.2, 99);
-  line($('s3l2'), t, 6.33, 99);
-  line($('s3l3'), t, 6.46, 99);
+  set($('s3pill'), { transform: `scale(${outBack(p(t, 6.1, 0.55))})`, transformOrigin: '0 50%' });
+  line($('s3l1'), t, 6.22, 99);
+  line($('s3l2'), t, 6.38, 99);
   set($('s3bar'), { width: lerp(0, 160, outExpo(p(t, 6.9, 0.8))) + 'px' });
   const bc = outBack(p(t, 6.5, 0.8), 1.4);
   set($('bigCircle'), { transform: `scale(${bc})` });
-  set($('bigCircleTxt'), { opacity: outCubic(p(t, 6.8, 0.4)) });
   const lg2 = p(t, 6.0, 0.5);
   set($('logo2'), { opacity: lg2 });
 
   // ---------- Transición L2 → L3 (el círculo se abre) ----------
-  const c = inOutExpo(p(t, 7.85, 0.85));
+  const c = inOutExpo(p(t, 7.6, 0.8));
   const r = c <= 0 ? 0 : lerp(260, 1750, c);
   $('L3').style.clipPath = `circle(${r}px at 900px 1160px)`;
   $('L3').style.visibility = c > 0 ? 'visible' : 'hidden';
 
   // ---------- Escena 4: cierre ----------
-  set($('bloom3'), { opacity: inOutCubic(p(t, 8.1, 1.2)), transform: `scale(${lerp(1.4, 1, outCubic(p(t, 8.1, 1.4)))})`, transformOrigin: '100% 100%' });
-  line($('e1'), t, 8.2, 99);
-  line($('e2'), t, 8.34, 99);
-  set($('ebar'), { width: lerp(0, 120, outExpo(p(t, 8.6, 0.7))) + 'px' });
-  const wIn = outBack(p(t, 8.7, 0.6));
-  set($('web'), { transform: `scale(${wIn})`, opacity: clamp(wIn) });
-  set($('logo3'), { opacity: outCubic(p(t, 8.3, 0.5)) });
+  set($('bloom3'), { opacity: inOutCubic(p(t, 7.9, 1.4)), transform: `scale(${lerp(1.4, 1, outCubic(p(t, 7.9, 1.6)))})`, transformOrigin: '100% 100%' });
+  line($('e1'), t, 7.88, 99);
+  line($('e2'), t, 8.02, 99);
+  set($('ebar'), { width: lerp(0, 120, outExpo(p(t, 8.25, 0.7))) + 'px' });
+  set($('ctaLead'), { opacity: outCubic(p(t, 8.1, 0.5)), transform: `translateY(${lerp(24, 0, outExpo(p(t, 8.1, 0.7)))}px)` });
+  // Pastillas CTA: entran al ritmo (corcheas) con un "tap"
+  [[1, 8.40], [2, 8.60], [3, 8.80]].forEach(([i, t0]) => {
+    const el = $('cta' + i);
+    const k = outBack(p(t, t0, 0.5), 2.4);
+    const press = i === 3 ? 1 - Math.sin(clamp(p(t, 9.40, 0.28)) * Math.PI) * 0.1 : 1;
+    set(el, { transform: `translateY(${lerp(40, 0, outExpo(p(t, t0, 0.6)))}px) scale(${k * press})`, opacity: clamp(k * 1.5) });
+    const rp = el.querySelector('.ripple');
+    const rr = p(t, i === 3 ? 9.40 : t0 + 0.12, 0.6);
+    set(rp, { opacity: rr > 0 && rr < 1 ? (1 - rr) * 0.6 : 0, transform: `scale(${lerp(0.4, i === 3 ? 2.9 : 2.3, outExpo(rr))})` });
+  });
+  const fo = outCubic(p(t, 8.95, 0.6));
+  set($('footL'), { opacity: fo });
+  set($('footR'), { opacity: fo });
+  set($('logo3'), { opacity: outCubic(p(t, 7.8, 0.5)) });
 }
 
 window.render = render;
